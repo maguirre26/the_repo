@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Home Wiki</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Mono:wght@300;400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f0e8;
+    --surface: #faf7f2;
+    --border: #d4c9b0;
+    --text: #2c2416;
+    --muted: #7a6e5f;
+    --accent: #5c7a3e;
+    --accent-light: #e8f0e0;
+    --danger: #c0392b;
+    --shadow: 0 2px 16px rgba(44,36,22,0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  header {
+    margin-bottom: 40px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 24px;
+  }
+
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    color: var(--text);
+  }
+
+  header p {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-top: 6px;
+    font-family: 'DM Mono', monospace;
+    font-weight: 300;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+  }
+
+  .card-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--muted);
+    margin-bottom: 6px;
+    margin-top: 16px;
+  }
+
+  label:first-of-type { margin-top: 0; }
+
+  input, select, textarea {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent);
+  }
+
+  input[type="password"] {
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 2px;
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 100px;
+    line-height: 1.6;
+  }
+
+  select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a6e5f' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 24px;
+    transition: opacity 0.2s, transform 0.1s;
+    letter-spacing: 0.3px;
+  }
+
+  .btn:hover { opacity: 0.9; }
+  .btn:active { transform: scale(0.99); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .status {
+    margin-top: 20px;
+    padding: 14px 18px;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-family: 'DM Mono', monospace;
+    font-weight: 300;
+    display: none;
+    line-height: 1.5;
+  }
+
+  .status.info { background: var(--accent-light); color: var(--accent); border: 1px solid #c5ddb0; display: block; }
+  .status.error { background: #fdecea; color: var(--danger); border: 1px solid #f5c6c2; display: block; }
+  .status.success { background: var(--accent-light); color: var(--accent); border: 1px solid #c5ddb0; display: block; }
+
+  .result-box {
+    display: none;
+    margin-top: 20px;
+  }
+
+  .result-box.visible { display: block; }
+
+  .result-box h3 {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  .result-content {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    font-size: 0.85rem;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    max-height: 300px;
+    overflow-y: auto;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+  }
+
+  .save-btn {
+    margin-top: 12px;
+    background: var(--text);
+  }
+
+  .steps {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  .step {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+
+  .step.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+  }
+
+  .step.done {
+    background: var(--accent-light);
+    border-color: #c5ddb0;
+    color: var(--accent);
+  }
+
+  .spinner {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <h1>Home Wiki</h1>
+    <p>research → generate → save to github</p>
+  </header>
+
+  <!-- CONFIG CARD -->
+  <div class="card">
+    <div class="card-title">Configuration</div>
+    <label>Anthropic API Key</label>
+    <input type="password" id="apiKey" placeholder="sk-ant-..." />
+    <label>Make Webhook URL</label>
+    <input type="text" id="webhookUrl" value="https://hook.us2.make.com/oi1fyl657cpoq4lqz8n6jksyoohibvw6" />
+  </div>
+
+  <!-- MAIN CARD -->
+  <div class="card">
+    <div class="card-title">New Entry</div>
+
+    <div class="steps">
+      <span class="step" id="step1">1 · write</span>
+      <span class="step" id="step2">2 · generate</span>
+      <span class="step" id="step3">3 · save</span>
+    </div>
+
+    <label>What do you want to research or document?</label>
+    <textarea id="instruction" placeholder="e.g. How to seal roof tiles step by step, including materials needed and common mistakes to avoid"></textarea>
+
+    <label>Save to file</label>
+    <select id="filePath">
+      <option value="home/painting.md">🏠 home / painting</option>
+      <option value="home/furniture.md">🪑 home / furniture</option>
+      <option value="home/cleaning.md">🧹 home / cleaning</option>
+      <option value="home/repairs.md">🔧 home / repairs</option>
+      <option value="construction/roof.md">🏗️ construction / roof</option>
+      <option value="construction/plumbing.md">🚰 construction / plumbing</option>
+      <option value="recycling/materials.md">♻️ recycling / materials</option>
+      <option value="recycling/techniques.md">♻️ recycling / techniques</option>
+      <option value="processes/step-by-step.md">📋 processes / step-by-step</option>
+    </select>
+
+    <button class="btn" id="generateBtn" onclick="generate()">Generate Content</button>
+
+    <div class="status" id="status"></div>
+
+    <div class="result-box" id="resultBox">
+      <h3>Generated Content — review before saving</h3>
+      <div class="result-content" id="resultContent"></div>
+      <button class="btn save-btn" id="saveBtn" onclick="saveToGitHub()">Save to GitHub</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let generatedContent = '';
+
+  function setStep(active) {
+    ['step1','step2','step3'].forEach((id, i) => {
+      const el = document.getElementById(id);
+      el.className = 'step';
+      if (i + 1 < active) el.classList.add('done');
+      if (i + 1 === active) el.classList.add('active');
+    });
+  }
+
+  function showStatus(msg, type) {
+    const el = document.getElementById('status');
+    el.textContent = msg;
+    el.className = 'status ' + type;
+  }
+
+  async function generate() {
+    const apiKey = document.getElementById('apiKey').value.trim();
+    const instruction = document.getElementById('instruction').value.trim();
+
+    if (!apiKey) return showStatus('Please enter your Anthropic API key.', 'error');
+    if (!instruction) return showStatus('Please describe what you want to research or document.', 'error');
+
+    const btn = document.getElementById('generateBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Generating...';
+    document.getElementById('resultBox').classList.remove('visible');
+    setStep(2);
+
+    showStatus('Calling Claude API...', 'info');
+
+    try {
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+          model: 'claude-haiku-4-5-20251001',
+          max_tokens: 1000,
+          messages: [{
+            role: 'user',
+            content: `You are a home maintenance and recycling expert. 
+Research and document the following topic in a clear, practical markdown format.
+Include: overview, materials or tools needed, step-by-step process, tips, and common mistakes to avoid.
+Keep it concise but complete.
+
+Topic: ${instruction}`
+          }]
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.error) throw new Error(data.error.message);
+
+      generatedContent = data.content[0].text;
+      document.getElementById('resultContent').textContent = generatedContent;
+      document.getElementById('resultBox').classList.add('visible');
+      setStep(3);
+      showStatus('Content generated! Review it below, then save to GitHub.', 'success');
+
+    } catch (err) {
+      showStatus('Error: ' + err.message, 'error');
+      setStep(1);
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = 'Generate Content';
+  }
+
+  async function saveToGitHub() {
+    const webhookUrl = document.getElementById('webhookUrl').value.trim();
+    const filePath = document.getElementById('filePath').value;
+    const instruction = document.getElementById('instruction').value.trim();
+
+    if (!generatedContent) return showStatus('No content to save.', 'error');
+
+    const saveBtn = document.getElementById('saveBtn');
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<span class="spinner"></span>Saving to GitHub...';
+
+    showStatus('Sending to Make → GitHub...', 'info');
+
+    // Encode content to base64
+    const encoded = btoa(unescape(encodeURIComponent(generatedContent)));
+
+    try {
+      await fetch(webhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: `updated ${filePath} — ${instruction.slice(0, 60)}`,
+          content: encoded,
+          file_path: filePath
+        })
+      });
+
+      showStatus(`✓ Saved to ${filePath} on GitHub!`, 'success');
+      setStep(1);
+      document.getElementById('resultBox').classList.remove('visible');
+      document.getElementById('instruction').value = '';
+      generatedContent = '';
+
+    } catch (err) {
+      showStatus('Error saving: ' + err.message, 'error');
+    }
+
+    saveBtn.disabled = false;
+    saveBtn.innerHTML = 'Save to GitHub';
+  }
+</script>
+</body>
+</html>
