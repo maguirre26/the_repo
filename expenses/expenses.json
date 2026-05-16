@@ -1,5 +1,7 @@
 {
-  "budget": {},
+  "budget": {
+    "food": 600
+  },
   "records": [
     {
       "amount": 30,
