@@ -6,8 +6,10 @@
 - Always commit after making any changes to files
 
 ## Repository Structure
-- expenses/expenses.json → expense records and budget data
+- expenses/expenses.json → all expense records and budget data
+- This is the ONLY expenses file. Never create other expense files.
 
 ## Behavior
-- When adding expense records, always read the current file first, then append the new record
+- When adding expense records, always read expenses/expenses.json first, then append the new record
 - Keep the JSON structure valid at all times
+- Never create new folders or files unless explicitly asked
