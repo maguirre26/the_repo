@@ -13,6 +13,13 @@
       "category": "food",
       "description": "coffee shop",
       "date": "2026-05-16"
+    },
+    {
+      "amount": 120,
+      "currency": "USD",
+      "category": "rent",
+      "description": "monthly payment",
+      "date": "2026-05-16"
     }
   ]
 }
