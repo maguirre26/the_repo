@@ -5,5 +5,12 @@
       "rent": 800,
       "other": 500
   },
-  "records": []
+  "records": [
+    {
+      "date": "2026-05-16",
+      "amount": 50,
+      "category": "food",
+      "description": "supermarket"
+    }
+  ]
 }
