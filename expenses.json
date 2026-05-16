@@ -1,3 +1,9 @@
 {
-"this is a test"
+    "categories": {
+      "food": 500,
+      "transport": 200,
+      "rent": 800,
+      "other": 500
+  },
+  "records": []
 }
