@@ -1,0 +1,11 @@
+{
+  "expenses": [
+    {
+      "amount": 30,
+      "currency": "USD",
+      "category": "transport",
+      "description": "taxi",
+      "date": "2026-05-16"
+    }
+  ]
+}
