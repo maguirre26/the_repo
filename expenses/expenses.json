@@ -6,6 +6,13 @@
       "category": "transport",
       "description": "taxi",
       "date": "2026-05-16"
+    },
+    {
+      "amount": 20,
+      "currency": "USD",
+      "category": "food",
+      "description": "coffee shop",
+      "date": "2026-05-16"
     }
   ]
 }
