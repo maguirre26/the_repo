@@ -3,675 +3,305 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🐖 Finanzas</title>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<title>Finanzas</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <style>
   :root {
-    --bg: #FFF8F0;
+    --bg: #ECEEF8;
+    --sidebar: #6C63FF;
     --card: #FFFFFF;
-    --orange: #FF6B35;
-    --yellow: #FFD93D;
-    --green: #6BCB77;
-    --blue: #4D96FF;
-    --pink: #FF6B9D;
-    --purple: #C77DFF;
-    --dark: #2D2D2D;
-    --muted: #888;
-    --shadow: 0 4px 20px rgba(0,0,0,0.08);
-    --radius: 20px;
+    --primary: #6C63FF;
+    --primary-light: #EEF0FF;
+    --text: #1A1A2E;
+    --muted: #8B8FA8;
+    --border: #F0F0F8;
+    --green: #22C55E;
+    --green-light: #DCFCE7;
+    --red: #EF4444;
+    --red-light: #FEE2E2;
+    --shadow: 0 2px 16px rgba(108,99,255,0.08);
+    --shadow-md: 0 4px 24px rgba(108,99,255,0.12);
+    --radius: 18px;
+    --radius-sm: 12px;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--text); min-height: 100vh; display: flex; }
 
-  body {
-    background: var(--bg);
-    font-family: 'Nunito', sans-serif;
-    color: var(--dark);
-    min-height: 100vh;
-    padding: 24px 20px 60px;
-    background-image: radial-gradient(circle at 20% 20%, #FFE8D6 0%, transparent 50%),
-                      radial-gradient(circle at 80% 80%, #D6F0FF 0%, transparent 50%);
-  }
+  .sidebar { width: 72px; background: var(--sidebar); border-radius: 0 24px 24px 0; display: flex; flex-direction: column; align-items: center; padding: 28px 0; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; box-shadow: 4px 0 24px rgba(108,99,255,0.2); }
+  .sidebar-logo { font-family: 'Syne', sans-serif; font-size: 0.6rem; font-weight: 800; color: white; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 40px; opacity: 0.9; }
+  .sidebar-nav { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .nav-btn { width: 44px; height: 44px; border-radius: 14px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.2s; color: rgba(255,255,255,0.6); font-size: 1.1rem; }
+  .nav-btn:hover, .nav-btn.active { background: rgba(255,255,255,0.2); color: white; }
 
-  header {
-    text-align: center;
-    margin-bottom: 32px;
-  }
+  .main { margin-left: 72px; flex: 1; padding: 32px 32px 60px; }
 
-  header h1 {
-    font-family: 'Fredoka One', cursive;
-    font-size: 2.8rem;
-    color: var(--orange);
-    letter-spacing: 1px;
-  }
+  .page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 28px; }
+  .page-title { font-family: 'Syne', sans-serif; font-size: 1.9rem; font-weight: 800; color: var(--text); }
+  .page-subtitle { font-size: 0.88rem; color: var(--muted); margin-top: 4px; }
+  .month-selector { background: var(--card); border: none; border-radius: 30px; padding: 10px 18px; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 600; color: var(--text); cursor: pointer; box-shadow: var(--shadow); outline: none; }
 
-  header p {
-    color: var(--muted);
-    font-size: 0.9rem;
-    margin-top: 4px;
-  }
+  .grid { display: flex; flex-direction: column; gap: 20px; }
+  .row-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
+  .row-main { display: grid; grid-template-columns: 1.2fr 0.9fr 1fr; gap: 20px; }
+  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
-  .grid {
-    max-width: 1100px;
-    margin: 0 auto;
-    display: grid;
-    gap: 20px;
-  }
+  .card { background: var(--card); border-radius: var(--radius); padding: 22px 24px; box-shadow: var(--shadow); transition: transform 0.2s; }
+  .card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
 
-  /* SUMMARY CARDS */
-  .summary-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 16px;
-  }
+  .stat-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .stat-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+  .stat-icon.pur { background: var(--primary-light); }
+  .stat-icon.grn { background: var(--green-light); }
+  .stat-icon.red { background: var(--red-light); }
+  .stat-dots { color: var(--muted); font-size: 1rem; cursor: pointer; }
+  .stat-value { font-family: 'Syne', sans-serif; font-size: 1.65rem; font-weight: 800; line-height: 1.1; margin-bottom: 3px; }
+  .stat-label { font-size: 0.78rem; color: var(--muted); font-weight: 500; }
+  .badge { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 20px; font-size: 0.71rem; font-weight: 700; margin-top: 10px; }
+  .b-grn { background: var(--green-light); color: var(--green); }
+  .b-red { background: var(--red-light); color: var(--red); }
+  .b-pur { background: var(--primary-light); color: var(--primary); }
 
-  .stat-card {
-    background: var(--card);
-    border-radius: var(--radius);
-    padding: 20px 24px;
-    box-shadow: var(--shadow);
-    position: relative;
-    overflow: hidden;
-    transition: transform 0.2s;
-  }
+  .hero { background: linear-gradient(135deg, #6C63FF 0%, #9B8FFF 100%); border-radius: var(--radius); padding: 28px; color: white; box-shadow: 0 8px 32px rgba(108,99,255,0.3); position: relative; overflow: hidden; }
+  .hero::after { content: ''; position: absolute; top: -50px; right: -50px; width: 180px; height: 180px; background: rgba(255,255,255,0.07); border-radius: 50%; pointer-events: none; }
+  .hero-label { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.75; margin-bottom: 8px; }
+  .hero-value { font-family: 'Syne', sans-serif; font-size: 2.3rem; font-weight: 800; margin-bottom: 4px; }
+  .hero-sub { font-size: 0.8rem; opacity: 0.65; margin-bottom: 18px; }
+  .hero-pill { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.18); border-radius: 20px; padding: 5px 14px; font-size: 0.78rem; font-weight: 600; }
 
-  .stat-card:hover { transform: translateY(-3px); }
+  .chart-title { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; margin-bottom: 2px; }
+  .chart-sub { font-size: 0.76rem; color: var(--muted); margin-bottom: 18px; }
+  .chart-box { position: relative; height: 200px; }
+  .chart-box.tall { height: 250px; }
 
-  .stat-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 4px;
-  }
+  .rec-list { display: flex; flex-direction: column; gap: 2px; max-height: 270px; overflow-y: auto; }
+  .rec-list::-webkit-scrollbar { width: 3px; }
+  .rec-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+  .rec-row { display: flex; align-items: center; justify-content: space-between; padding: 9px 10px; border-radius: 10px; transition: background 0.15s; }
+  .rec-row:hover { background: var(--bg); }
+  .rec-lft { display: flex; align-items: center; gap: 11px; }
+  .rec-ico { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0; }
+  .rec-name { font-size: 0.84rem; font-weight: 600; }
+  .rec-cat { font-size: 0.71rem; color: var(--muted); }
+  .rec-amt { font-family: 'Syne', sans-serif; font-size: 0.92rem; font-weight: 700; }
+  .c-grn { color: var(--green); }
+  .c-drk { color: var(--text); }
 
-  .stat-card.income::before { background: var(--green); }
-  .stat-card.expenses::before { background: var(--orange); }
-  .stat-card.balance::before { background: var(--blue); }
-  .stat-card.usd::before { background: var(--yellow); }
-  .stat-card.pig::before { background: var(--pink); }
+  .loading-wrap { display: flex; align-items: center; justify-content: center; min-height: 80vh; flex-direction: column; gap: 16px; color: var(--muted); }
+  .spinner { width: 44px; height: 44px; border: 3px solid var(--primary-light); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
-  .stat-label {
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--muted);
-    margin-bottom: 8px;
-  }
-
-  .stat-value {
-    font-family: 'Fredoka One', cursive;
-    font-size: 1.8rem;
-    line-height: 1;
-  }
-
-  .stat-card.income .stat-value { color: var(--green); }
-  .stat-card.expenses .stat-value { color: var(--orange); }
-  .stat-card.balance .stat-value { color: var(--blue); }
-  .stat-card.usd .stat-value { color: #E6B800; }
-  .stat-card.pig .stat-value { color: var(--pink); }
-
-  .stat-sub {
-    font-size: 0.78rem;
-    color: var(--muted);
-    margin-top: 4px;
-  }
-
-  .stat-emoji {
-    position: absolute;
-    right: 16px;
-    top: 16px;
-    font-size: 1.8rem;
-    opacity: 0.15;
-  }
-
-  /* CHARTS */
-  .charts-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-  }
-
-  @media (max-width: 700px) {
-    .charts-row { grid-template-columns: 1fr; }
-    header h1 { font-size: 2rem; }
-    .stat-value { font-size: 1.4rem; }
-  }
-
-  .chart-card {
-    background: var(--card);
-    border-radius: var(--radius);
-    padding: 24px;
-    box-shadow: var(--shadow);
-  }
-
-  .chart-card.full { grid-column: 1 / -1; }
-
-  .chart-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-
-  .chart-title {
-    font-family: 'Fredoka One', cursive;
-    font-size: 1.2rem;
-    color: var(--dark);
-  }
-
-  select {
-    font-family: 'Nunito', sans-serif;
-    font-size: 0.85rem;
-    font-weight: 700;
-    padding: 6px 12px;
-    border: 2px solid #eee;
-    border-radius: 30px;
-    background: white;
-    color: var(--dark);
-    cursor: pointer;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-
-  select:focus { border-color: var(--orange); }
-
-  .chart-container {
-    position: relative;
-    height: 260px;
-  }
-
-  /* RECORDS TABLE */
-  .records-card {
-    background: var(--card);
-    border-radius: var(--radius);
-    padding: 24px;
-    box-shadow: var(--shadow);
-  }
-
-  .records-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-  }
-
-  .records-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    max-height: 320px;
-    overflow-y: auto;
-    padding-right: 4px;
-  }
-
-  .records-list::-webkit-scrollbar { width: 4px; }
-  .records-list::-webkit-scrollbar-thumb { background: #eee; border-radius: 4px; }
-
-  .record-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 14px;
-    border-radius: 12px;
-    background: #FAFAFA;
-    transition: background 0.15s;
-  }
-
-  .record-item:hover { background: #F0F0F0; }
-
-  .record-left {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .record-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-
-  .record-desc {
-    font-size: 0.88rem;
-    font-weight: 600;
-  }
-
-  .record-cat {
-    font-size: 0.72rem;
-    color: var(--muted);
-    font-weight: 600;
-  }
-
-  .record-amount {
-    font-family: 'Fredoka One', cursive;
-    font-size: 1rem;
-  }
-
-  .positive { color: var(--green); }
-  .negative { color: var(--orange); }
-
-  /* LOADING */
-  .loading {
-    text-align: center;
-    padding: 60px;
-    font-family: 'Fredoka One', cursive;
-    font-size: 1.5rem;
-    color: var(--orange);
-  }
-
-  .error {
-    text-align: center;
-    padding: 40px;
-    color: var(--orange);
-    font-weight: 700;
-  }
-
-  /* BALANCE CARD */
-  .balance-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-  }
-
-  @media (max-width: 500px) {
-    .balance-row { grid-template-columns: 1fr; }
-  }
-
-  .balance-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: var(--radius);
-    padding: 24px;
-    color: white;
-    box-shadow: var(--shadow);
-  }
-
-  .balance-card.ars {
-    background: linear-gradient(135deg, var(--orange) 0%, #FF9A5C 100%);
-  }
-
-  .balance-card.usd-card {
-    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-  }
-
-  .balance-card-label {
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    opacity: 0.8;
-    margin-bottom: 8px;
-  }
-
-  .balance-card-value {
-    font-family: 'Fredoka One', cursive;
-    font-size: 2rem;
-  }
-
-  .balance-card-sub {
-    font-size: 0.8rem;
-    opacity: 0.7;
-    margin-top: 6px;
-  }
-
-  .to-pay-badge {
-    display: inline-block;
-    background: rgba(255,255,255,0.2);
-    border-radius: 20px;
-    padding: 3px 10px;
-    font-size: 0.78rem;
-    font-weight: 700;
-    margin-top: 8px;
-  }
+  @media (max-width: 960px) { .row-4 { grid-template-columns: repeat(2,1fr); } .row-main { grid-template-columns: 1fr; } .row-2 { grid-template-columns: 1fr; } }
+  @media (max-width: 600px) { .main { margin-left: 60px; padding: 20px 14px 40px; } .sidebar { width: 60px; } .hero-value { font-size: 1.8rem; } }
 </style>
 </head>
 <body>
 
-<div id="app">
-  <div class="loading">🐖 Loading your finances...</div>
-</div>
+<aside class="sidebar">
+  <div class="sidebar-logo">FIN</div>
+  <nav class="sidebar-nav">
+    <div class="nav-btn active">📊</div>
+    <div class="nav-btn">📋</div>
+    <div class="nav-btn">🎯</div>
+    <div class="nav-btn">📈</div>
+  </nav>
+  <div class="nav-btn" style="margin-top:auto">⚙️</div>
+</aside>
+
+<main class="main">
+  <div id="app">
+    <div class="loading-wrap">
+      <div class="spinner"></div>
+      <span style="font-size:0.88rem">Loading your finances...</span>
+    </div>
+  </div>
+</main>
 
 <script>
-const DATA_URL = 'https://raw.githubusercontent.com/maguirre26/the_repo/main/expenses/expenses.json';
+const URL = 'https://raw.githubusercontent.com/maguirre26/the_repo/main/expenses/expenses.json';
 
-const CATEGORY_COLORS = {
-  'daily':       '#FF6B35',
-  'services':    '#4D96FF',
-  'monthly':     '#C77DFF',
-  'indulgencias':'#FF6B9D',
-  'home':        '#6BCB77',
-  'shopping':    '#FFD93D',
-  'transfer':    '#A8DADC',
-  'income':      '#6BCB77',
-  'income-usd':  '#38ef7d',
-  'carry-over':  '#B0B0B0',
-  'other':       '#E0E0E0'
+const CAT = {
+  daily:        {icon:'🛒',color:'#6C63FF',bg:'#EEF0FF',label:'Daily'},
+  services:     {icon:'⚡',color:'#F59E0B',bg:'#FEF3C7',label:'Services'},
+  monthly:      {icon:'📅',color:'#8B5CF6',bg:'#EDE9FE',label:'Monthly'},
+  indulgencias: {icon:'✨',color:'#EC4899',bg:'#FCE7F3',label:'Treats'},
+  home:         {icon:'🏠',color:'#22C55E',bg:'#DCFCE7',label:'Home'},
+  shopping:     {icon:'🛍️',color:'#F97316',bg:'#FFEDD5',label:'Shopping'},
+  transfer:     {icon:'💱',color:'#8B8FA8',bg:'#F4F5FA',label:'Transfer'},
+  income:       {icon:'💰',color:'#22C55E',bg:'#DCFCE7',label:'Income'},
+  'income-usd': {icon:'💵',color:'#16A34A',bg:'#D1FAE5',label:'Income USD'},
+  'carry-over': {icon:'↩️',color:'#8B8FA8',bg:'#F4F5FA',label:'Carry-over'},
+  other:        {icon:'📦',color:'#8B8FA8',bg:'#F4F5FA',label:'Other'},
 };
+const ct = k => CAT[k]||CAT.other;
+const fARS = n => '$ '+Math.abs(n).toLocaleString('es-AR',{maximumFractionDigits:0});
+const fUSD = n => 'US$ '+Math.abs(n).toLocaleString('en-US',{maximumFractionDigits:0});
+const mons = rs => [...new Set(rs.map(r=>r.date?.substring(0,7)).filter(Boolean))].sort();
+const byM  = (rs,m) => rs.filter(r=>r.date?.startsWith(m));
+const exps = rs => rs.filter(r=>r.amount<0&&!['income','income-usd','carry-over','transfer'].includes(r.category));
+const incs = rs => rs.filter(r=>r.amount>0&&['income','income-usd'].includes(r.category));
+const mLbl = m => new Date(m+'-01').toLocaleDateString('en-US',{month:'long',year:'numeric'});
 
-const CATEGORY_LABELS = {
-  'daily':       '🛒 Daily',
-  'services':    '⚡ Services',
-  'monthly':     '📅 Monthly',
-  'indulgencias':'✨ Treats',
-  'home':        '🏠 Home',
-  'shopping':    '🛍️ Shopping',
-  'transfer':    '💱 Transfer',
-  'income':      '💰 Income',
-  'income-usd':  '💵 Income USD',
-  'carry-over':  '↩️ Carry-over',
-  'other':       '📦 Other'
-};
+let pie=null,bar=null;
 
-function formatARS(n) {
-  return '$ ' + Math.abs(n).toLocaleString('es-AR', { maximumFractionDigits: 0 });
-}
+function go(data) {
+  const recs = data.records||[];
+  const ms = mons(recs);
+  let sel = ms[ms.length-1]||'';
+  const cb = data.current_balance||{};
+  const sb = data.starting_balance||{};
 
-function formatUSD(n) {
-  return 'US$ ' + Math.abs(n).toLocaleString('en-US', { maximumFractionDigits: 0 });
-}
-
-function getMonths(records) {
-  const months = [...new Set(records.map(r => r.date ? r.date.substring(0, 7) : null).filter(Boolean))];
-  return months.sort();
-}
-
-function filterByMonth(records, month) {
-  return records.filter(r => r.date && r.date.startsWith(month));
-}
-
-function getExpenses(records) {
-  return records.filter(r => r.amount < 0 && !['income','income-usd','carry-over','transfer'].includes(r.category));
-}
-
-function getIncome(records) {
-  return records.filter(r => r.amount > 0 && ['income','income-usd'].includes(r.category));
-}
-
-function buildApp(data) {
-  const records = data.records || [];
-  const months = getMonths(records);
-  const currentBalance = data.current_balance || {};
-  const startingBalance = data.starting_balance || {};
-
-  // Default to latest month
-  let selectedMonth = months[months.length - 1] || '2026-05';
-
-  const app = document.getElementById('app');
-  app.innerHTML = `
-    <header>
-      <h1>🐖 Mis Finanzas</h1>
-      <p>Your personal finance dashboard</p>
-    </header>
-
-    <div class="grid">
-
-      <!-- BALANCE CARDS -->
-      <div class="balance-row">
-        <div class="balance-card ars">
-          <div class="balance-card-label">💵 Current Balance ARS</div>
-          <div class="balance-card-value" id="balARS">${formatARS(currentBalance.ARS || 0)}</div>
-          <div class="balance-card-sub">Started: ${formatARS(startingBalance.ARS || 0)}</div>
-          <div class="to-pay-badge">To pay: ${formatARS(currentBalance.to_pay || 0)}</div>
-        </div>
-        <div class="balance-card usd-card">
-          <div class="balance-card-label">🇺🇸 Current Balance USD</div>
-          <div class="balance-card-value" id="balUSD">${formatUSD(currentBalance.USD || 0)}</div>
-          <div class="balance-card-sub">Started: ${formatUSD(startingBalance.USD || 0)}</div>
-        </div>
+  document.getElementById('app').innerHTML = `
+    <div class="page-header">
+      <div>
+        <div class="page-title">Good day, Mar! 👋</div>
+        <div class="page-subtitle">Your personal finance overview</div>
       </div>
-
-      <!-- SUMMARY STATS -->
-      <div class="summary-row" id="summaryRow"></div>
-
-      <!-- CHARTS ROW -->
-      <div class="charts-row">
-        <div class="chart-card">
-          <div class="chart-header">
-            <div class="chart-title">🥧 Spending by Category</div>
-            <select id="monthSelect"></select>
-          </div>
-          <div class="chart-container">
-            <canvas id="pieChart"></canvas>
-          </div>
-        </div>
-
-        <div class="chart-card">
-          <div class="chart-header">
-            <div class="chart-title">📈 Monthly Totals</div>
-          </div>
-          <div class="chart-container">
-            <canvas id="lineChart"></canvas>
-          </div>
-        </div>
-      </div>
-
-      <!-- RECORDS -->
-      <div class="records-card">
-        <div class="records-header">
-          <div class="chart-title">📋 Recent Records</div>
-        </div>
-        <div class="records-list" id="recordsList"></div>
-      </div>
-
+      <select class="month-selector" id="mSel">
+        ${ms.map(m=>`<option value="${m}"${m===sel?' selected':''}>${mLbl(m)}</option>`).join('')}
+      </select>
     </div>
-  `;
+    <div class="grid">
+      <div class="row-4" id="stats"></div>
+      <div class="row-main">
+        <div class="hero">
+          <div class="hero-label">Balance ARS</div>
+          <div class="hero-value">${fARS(cb.ARS||0)}</div>
+          <div class="hero-sub">Started at ${fARS(sb.ARS||0)}</div>
+          <div class="hero-pill">💳 To pay: ${fARS(cb.to_pay||0)}</div>
+        </div>
+        <div class="card" style="display:flex;flex-direction:column;gap:8px;">
+          <div class="stat-top"><div class="stat-icon grn">🇺🇸</div></div>
+          <div class="stat-label">USD Balance</div>
+          <div class="stat-value" style="color:var(--primary);font-size:2rem">${fUSD(cb.USD||0)}</div>
+          <div class="stat-label">Started: ${fUSD(sb.USD||0)}</div>
+        </div>
+        <div class="card">
+          <div class="chart-title">Spending by Category</div>
+          <div class="chart-sub" id="pieSub"></div>
+          <div class="chart-box"><canvas id="pieC"></canvas></div>
+        </div>
+      </div>
+      <div class="row-2">
+        <div class="card">
+          <div class="chart-title">Monthly Overview</div>
+          <div class="chart-sub">Income vs Expenses</div>
+          <div class="chart-box tall"><canvas id="barC"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="chart-title">Recent Transactions</div>
+          <div class="chart-sub" id="recSub"></div>
+          <div class="rec-list" id="recList"></div>
+        </div>
+      </div>
+    </div>`;
 
-  // Populate month selector
-  const monthSelect = document.getElementById('monthSelect');
-  months.forEach(m => {
-    const opt = document.createElement('option');
-    opt.value = m;
-    opt.textContent = new Date(m + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-    if (m === selectedMonth) opt.selected = true;
-    monthSelect.appendChild(opt);
+  // Bar chart (all months, built once)
+  const md = ms.map(m=>({
+    l: new Date(m+'-01').toLocaleDateString('en-US',{month:'short',year:'2-digit'}),
+    e: exps(byM(recs,m)).reduce((s,r)=>s+Math.abs(r.amount),0),
+    i: incs(byM(recs,m)).reduce((s,r)=>s+r.amount,0)
+  }));
+  if(bar) bar.destroy();
+  bar = new Chart(document.getElementById('barC'),{
+    type:'bar',
+    data:{
+      labels: md.map(d=>d.l),
+      datasets:[
+        {label:'Income',data:md.map(d=>d.i),backgroundColor:'#22C55E30',borderColor:'#22C55E',borderWidth:2,borderRadius:8,borderSkipped:false},
+        {label:'Expenses',data:md.map(d=>d.e),backgroundColor:'#6C63FF30',borderColor:'#6C63FF',borderWidth:2,borderRadius:8,borderSkipped:false}
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{labels:{font:{family:'DM Sans',size:11,weight:'600'},usePointStyle:true,padding:16}},
+        tooltip:{callbacks:{label:c=>` ${fARS(c.raw)}`}}
+      },
+      scales:{
+        y:{ticks:{callback:v=>'$'+Math.round(v/1000)+'k',font:{family:'DM Sans',size:10}},grid:{color:'#F0F0F8'},border:{display:false}},
+        x:{ticks:{font:{family:'DM Sans',size:11}},grid:{display:false},border:{display:false}}
+      }
+    }
   });
 
-  let pieChartInstance = null;
-  let lineChartInstance = null;
+  function update(month) {
+    const mr = byM(recs, month);
+    const ex = exps(mr), ic = incs(mr);
+    const tE = ex.reduce((s,r)=>s+Math.abs(r.amount),0);
+    const tI = ic.reduce((s,r)=>s+r.amount,0);
+    const net = tI - tE;
 
-  function updateSummary(month) {
-    const monthRecords = filterByMonth(records, month);
-    const expenses = getExpenses(monthRecords);
-    const income = getIncome(monthRecords);
+    document.getElementById('pieSub').textContent = mLbl(month);
+    document.getElementById('recSub').textContent = mLbl(month);
 
-    const totalExpenses = expenses.reduce((s, r) => s + Math.abs(r.amount), 0);
-    const totalIncome = income.reduce((s, r) => s + r.amount, 0);
-    const net = totalIncome - totalExpenses;
-
-    document.getElementById('summaryRow').innerHTML = `
-      <div class="stat-card income">
-        <div class="stat-emoji">💰</div>
-        <div class="stat-label">Income</div>
-        <div class="stat-value">${formatARS(totalIncome)}</div>
-        <div class="stat-sub">${income.length} transactions</div>
+    // Stats
+    document.getElementById('stats').innerHTML = `
+      <div class="card">
+        <div class="stat-top"><div class="stat-icon grn">💰</div><div class="stat-dots">···</div></div>
+        <div class="stat-value" style="color:var(--green)">${fARS(tI)}</div>
+        <div class="stat-label">Total Income</div>
+        <span class="badge b-grn">↑ ${ic.length} transactions</span>
       </div>
-      <div class="stat-card expenses">
-        <div class="stat-emoji">🛒</div>
-        <div class="stat-label">Expenses</div>
-        <div class="stat-value">${formatARS(totalExpenses)}</div>
-        <div class="stat-sub">${expenses.length} transactions</div>
+      <div class="card">
+        <div class="stat-top"><div class="stat-icon red">🛒</div><div class="stat-dots">···</div></div>
+        <div class="stat-value" style="color:var(--red)">${fARS(tE)}</div>
+        <div class="stat-label">Total Expenses</div>
+        <span class="badge b-red">↓ ${ex.length} transactions</span>
       </div>
-      <div class="stat-card balance">
-        <div class="stat-emoji">${net >= 0 ? '😊' : '😬'}</div>
-        <div class="stat-label">Net</div>
-        <div class="stat-value" style="color:${net >= 0 ? 'var(--green)' : 'var(--orange)'}">${net >= 0 ? '+' : ''}${formatARS(net)}</div>
-        <div class="stat-sub">${net >= 0 ? 'Positive month!' : 'Overspent'}</div>
+      <div class="card">
+        <div class="stat-top"><div class="stat-icon ${net>=0?'grn':'red'}">🐖</div><div class="stat-dots">···</div></div>
+        <div class="stat-value" style="color:${net>=0?'var(--green)':'var(--red)'}">${net>=0?'+':''}${fARS(net)}</div>
+        <div class="stat-label">Net Balance</div>
+        <span class="badge ${net>=0?'b-grn':'b-red'}">${net>=0?'Great month!':'Overspent'}</span>
       </div>
-    `;
-  }
+      <div class="card">
+        <div class="stat-top"><div class="stat-icon pur">📊</div><div class="stat-dots">···</div></div>
+        <div class="stat-value" style="color:var(--primary)">${ex.length+ic.length}</div>
+        <div class="stat-label">Transactions</div>
+        <span class="badge b-pur">${mLbl(month).split(' ')[0]}</span>
+      </div>`;
 
-  function updatePieChart(month) {
-    const monthRecords = filterByMonth(records, month);
-    const expenses = getExpenses(monthRecords);
-
-    const catTotals = {};
-    expenses.forEach(r => {
-      const cat = r.category || 'other';
-      catTotals[cat] = (catTotals[cat] || 0) + Math.abs(r.amount);
-    });
-
-    const labels = Object.keys(catTotals).map(c => CATEGORY_LABELS[c] || c);
-    const values = Object.values(catTotals);
-    const colors = Object.keys(catTotals).map(c => CATEGORY_COLORS[c] || '#ccc');
-
-    if (pieChartInstance) pieChartInstance.destroy();
-    const ctx = document.getElementById('pieChart').getContext('2d');
-    pieChartInstance = new Chart(ctx, {
-      type: 'doughnut',
-      data: {
-        labels,
-        datasets: [{
-          data: values,
-          backgroundColor: colors,
-          borderWidth: 3,
-          borderColor: '#fff',
-          hoverOffset: 8
-        }]
+    // Pie
+    const catT = {};
+    ex.forEach(r=>{ const k=r.category||'other'; catT[k]=(catT[k]||0)+Math.abs(r.amount); });
+    if(pie) pie.destroy();
+    pie = new Chart(document.getElementById('pieC'),{
+      type:'doughnut',
+      data:{
+        labels: Object.keys(catT).map(k=>ct(k).label),
+        datasets:[{data:Object.values(catT),backgroundColor:Object.keys(catT).map(k=>ct(k).color+'BB'),borderColor:Object.keys(catT).map(k=>ct(k).color),borderWidth:2,hoverOffset:5}]
       },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: 'right',
-            labels: {
-              font: { family: 'Nunito', size: 11, weight: '700' },
-              boxWidth: 12,
-              padding: 10
-            }
-          },
-          tooltip: {
-            callbacks: {
-              label: (ctx) => ` ${formatARS(ctx.raw)}`
-            }
-          }
+      options:{
+        responsive:true, maintainAspectRatio:false, cutout:'60%',
+        plugins:{
+          legend:{position:'right',labels:{font:{family:'DM Sans',size:10,weight:'600'},boxWidth:10,padding:8,usePointStyle:true}},
+          tooltip:{callbacks:{label:c=>` ${fARS(c.raw)}`}}
         }
       }
     });
-  }
 
-  function updateLineChart() {
-    const monthlyData = months.map(month => {
-      const monthRecords = filterByMonth(records, month);
-      const expenses = getExpenses(monthRecords);
-      const income = getIncome(monthRecords);
-      return {
-        month,
-        expenses: expenses.reduce((s, r) => s + Math.abs(r.amount), 0),
-        income: income.reduce((s, r) => s + r.amount, 0)
-      };
-    });
-
-    const labels = monthlyData.map(d => new Date(d.month + '-01').toLocaleDateString('en-US', { month: 'short', year: '2-digit' }));
-
-    if (lineChartInstance) lineChartInstance.destroy();
-    const ctx = document.getElementById('lineChart').getContext('2d');
-    lineChartInstance = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels,
-        datasets: [
-          {
-            label: '💰 Income',
-            data: monthlyData.map(d => d.income),
-            backgroundColor: '#6BCB7780',
-            borderColor: '#6BCB77',
-            borderWidth: 2,
-            borderRadius: 8
-          },
-          {
-            label: '🛒 Expenses',
-            data: monthlyData.map(d => d.expenses),
-            backgroundColor: '#FF6B3580',
-            borderColor: '#FF6B35',
-            borderWidth: 2,
-            borderRadius: 8
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            labels: {
-              font: { family: 'Nunito', size: 11, weight: '700' }
-            }
-          },
-          tooltip: {
-            callbacks: {
-              label: (ctx) => ` ${formatARS(ctx.raw)}`
-            }
-          }
-        },
-        scales: {
-          y: {
-            ticks: {
-              callback: v => '$ ' + (v/1000).toFixed(0) + 'k',
-              font: { family: 'Nunito', size: 10 }
-            },
-            grid: { color: '#f0f0f0' }
-          },
-          x: {
-            ticks: { font: { family: 'Nunito', size: 11 } },
-            grid: { display: false }
-          }
-        }
-      }
-    });
-  }
-
-  function updateRecords(month) {
-    const monthRecords = filterByMonth(records, month).slice().reverse();
-    const list = document.getElementById('recordsList');
-    list.innerHTML = monthRecords.map(r => `
-      <div class="record-item">
-        <div class="record-left">
-          <div class="record-dot" style="background:${CATEGORY_COLORS[r.category] || '#ccc'}"></div>
+    // Records
+    document.getElementById('recList').innerHTML = [...mr].reverse().slice(0,20).map(r=>`
+      <div class="rec-row">
+        <div class="rec-lft">
+          <div class="rec-ico" style="background:${ct(r.category).bg}">${ct(r.category).icon}</div>
           <div>
-            <div class="record-desc">${r.description || '—'}</div>
-            <div class="record-cat">${CATEGORY_LABELS[r.category] || r.category || 'other'}</div>
+            <div class="rec-name">${r.description||'—'}</div>
+            <div class="rec-cat">${ct(r.category).label}</div>
           </div>
         </div>
-        <div class="record-amount ${r.amount >= 0 ? 'positive' : 'negative'}">
-          ${r.amount >= 0 ? '+' : ''}${formatARS(r.amount)}
-        </div>
-      </div>
-    `).join('');
+        <div class="rec-amt ${r.amount>=0?'c-grn':'c-drk'}">${r.amount>=0?'+':''}${fARS(r.amount)}</div>
+      </div>`).join('');
   }
 
-  function refresh(month) {
-    updateSummary(month);
-    updatePieChart(month);
-    updateRecords(month);
-  }
-
-  // Init
-  updateLineChart();
-  refresh(selectedMonth);
-
-  monthSelect.addEventListener('change', (e) => {
-    selectedMonth = e.target.value;
-    refresh(selectedMonth);
-  });
+  update(sel);
+  document.getElementById('mSel').addEventListener('change',e=>update(e.target.value));
 }
 
-// Fetch data
-fetch(DATA_URL)
-  .then(r => r.json())
-  .then(buildApp)
-  .catch(err => {
-    document.getElementById('app').innerHTML = `
-      <div class="error">
-        <p style="font-size:3rem">😬</p>
-        <p>Couldn't load data from GitHub.</p>
-        <p style="font-size:0.85rem;margin-top:8px;color:#aaa">${err.message}</p>
-      </div>`;
-  });
+fetch(URL).then(r=>r.json()).then(go).catch(e=>{
+  document.getElementById('app').innerHTML=`<div class="loading-wrap"><div style="font-size:2.5rem">😬</div><div style="font-weight:700">Couldn't load data</div><div style="font-size:0.82rem;color:var(--muted)">${e.message}</div></div>`;
+});
 </script>
 </body>
 </html>
