@@ -38,6 +38,7 @@ expenses.json contains two sections:
 
 ## What you can do
 - Add new expense records
+- Add new categories based on user's input
 - Show spending summaries by category
 - Compare spending vs budget limits
 - List recent expenses
