@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finanzas</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #ECEEF8;
+    --sidebar: #6C63FF;
+    --card: #FFFFFF;
+    --primary: #6C63FF;
+    --primary-light: #EEF0FF;
+    --text: #111827;
+    --text-2: #374151;
+    --muted: #9CA3AF;
+    --border: #F3F4F8;
+    --green: #16A34A;
+    --green-light: #DCFCE7;
+    --red: #DC2626;
+    --red-light: #FEE2E2;
+    --shadow: 0 1px 12px rgba(0,0,0,0.07);
+    --shadow-md: 0 4px 20px rgba(0,0,0,0.1);
+    --radius: 16px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    font-size: 14px;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 68px;
+    background: var(--sidebar);
+    border-radius: 0 20px 20px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 0;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    z-index: 100;
+    box-shadow: 3px 0 20px rgba(108,99,255,0.18);
+  }
+  .s-logo {
+    font-size: 0.6rem;
+    font-weight: 800;
+    color: white;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 36px;
+    opacity: 0.85;
+  }
+  .s-nav { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+  .s-btn {
+    width: 42px; height: 42px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    color: rgba(255,255,255,0.55);
+    font-size: 1rem;
+    transition: background 0.15s, color 0.15s;
+  }
+  .s-btn:hover, .s-btn.on { background: rgba(255,255,255,0.18); color: white; }
+
+  /* MAIN */
+  .main { margin-left: 68px; flex: 1; padding: 28px 28px 56px; }
+
+  /* HEADER */
+  .hdr { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
+  .hdr-title { font-size: 1.65rem; font-weight: 800; color: var(--text); }
+  .hdr-sub { font-size: 0.82rem; color: var(--muted); margin-top: 3px; }
+  .m-sel {
+    background: var(--card);
+    border: 1.5px solid #E5E7EB;
+    border-radius: 24px;
+    padding: 9px 16px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text);
+    cursor: pointer;
+    outline: none;
+    box-shadow: var(--shadow);
+  }
+
+  /* LAYOUT */
+  .g { display: flex; flex-direction: column; gap: 16px; }
+  .r4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; }
+  .r3 { display: grid; grid-template-columns: 1.2fr 0.85fr 1fr; gap: 16px; }
+  .r2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  /* CARD */
+  .c {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    box-shadow: var(--shadow);
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .c:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+
+  /* STAT CARDS */
+  .s-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .s-ico {
+    width: 38px; height: 38px;
+    border-radius: 11px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+  }
+  .ico-pur { background: var(--primary-light); }
+  .ico-grn { background: var(--green-light); }
+  .ico-red { background: var(--red-light); }
+  .s-dots { color: #D1D5DB; font-size: 0.9rem; letter-spacing: 2px; cursor: pointer; }
+  .s-val {
+    font-size: 1.55rem;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1.15;
+    margin-bottom: 3px;
+  }
+  .s-lbl { font-size: 0.75rem; color: var(--muted); font-weight: 500; }
+  .bdg {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    margin-top: 10px;
+  }
+  .bg { background: var(--green-light); color: var(--green); }
+  .br { background: var(--red-light); color: var(--red); }
+  .bp { background: var(--primary-light); color: var(--primary); }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, #6C63FF 0%, #9B91FF 100%);
+    border-radius: var(--radius);
+    padding: 26px 28px;
+    color: white;
+    box-shadow: 0 6px 28px rgba(108,99,255,0.28);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 200px; height: 200px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .h-lbl { font-size: 0.7rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.7; margin-bottom: 8px; }
+  .h-val { font-size: 2.1rem; font-weight: 800; line-height: 1.1; margin-bottom: 4px; }
+  .h-sub { font-size: 0.78rem; opacity: 0.6; margin-bottom: 18px; }
+  .h-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 20px;
+    padding: 5px 13px;
+    font-size: 0.76rem;
+    font-weight: 600;
+  }
+
+  /* CHART */
+  .ct { font-size: 0.95rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .cs { font-size: 0.74rem; color: var(--muted); margin-bottom: 16px; }
+  .cb { position: relative; height: 195px; }
+  .cb.t { height: 245px; }
+
+  /* RECORDS */
+  .rl { display: flex; flex-direction: column; gap: 1px; max-height: 265px; overflow-y: auto; }
+  .rl::-webkit-scrollbar { width: 3px; }
+  .rl::-webkit-scrollbar-thumb { background: #E5E7EB; border-radius: 4px; }
+  .rr {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 9px 10px;
+    border-radius: 10px;
+    transition: background 0.12s;
+  }
+  .rr:hover { background: var(--bg); }
+  .rl-l { display: flex; align-items: center; gap: 10px; }
+  .ri {
+    width: 32px; height: 32px;
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+  }
+  .rn { font-size: 0.82rem; font-weight: 600; color: var(--text); }
+  .rc { font-size: 0.7rem; color: var(--muted); }
+  .ra { font-size: 0.88rem; font-weight: 700; }
+  .pos { color: var(--green); }
+  .neg { color: var(--text-2); }
+
+  /* USD card specific */
+  .usd-card { display: flex; flex-direction: column; }
+  .usd-val { font-size: 1.9rem; font-weight: 800; color: var(--text); margin: auto 0; }
+
+  /* LOADING */
+  .loader { display: flex; align-items: center; justify-content: center; min-height: 80vh; flex-direction: column; gap: 14px; color: var(--muted); }
+  .sp { width: 36px; height: 36px; border: 3px solid var(--primary-light); border-top-color: var(--primary); border-radius: 50%; animation: sp .75s linear infinite; }
+  @keyframes sp { to { transform: rotate(360deg); } }
+
+  @media (max-width: 960px) { .r4 { grid-template-columns: repeat(2,1fr); } .r3 { grid-template-columns: 1fr; } .r2 { grid-template-columns: 1fr; } }
+  @media (max-width: 560px) { .main { margin-left: 60px; padding: 18px 12px 40px; } .sidebar { width: 60px; } }
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="s-logo">FIN</div>
+  <nav class="s-nav">
+    <div class="s-btn on">📊</div>
+    <div class="s-btn">📋</div>
+    <div class="s-btn">🎯</div>
+    <div class="s-btn">💬</div>
+  </nav>
+  <div class="s-btn" style="margin-top:auto">⚙️</div>
+</aside>
+
+<main class="main">
+  <div id="app">
+    <div class="loader"><div class="sp"></div><span style="font-size:.84rem;font-weight:500">Loading your finances...</span></div>
+  </div>
+</main>
+
+<script>
+const SRC = 'https://raw.githubusercontent.com/maguirre26/the_repo/main/expenses/expenses.json';
+
+const CAT = {
+  daily:        {i:'🛒',c:'#6C63FF',b:'#EEF0FF',l:'Daily'},
+  services:     {i:'⚡',c:'#F59E0B',b:'#FEF3C7',l:'Services'},
+  monthly:      {i:'📅',c:'#8B5CF6',b:'#EDE9FE',l:'Monthly'},
+  indulgencias: {i:'✨',c:'#EC4899',b:'#FCE7F3',l:'Treats'},
+  home:         {i:'🏠',c:'#22C55E',b:'#DCFCE7',l:'Home'},
+  shopping:     {i:'🛍️',c:'#F97316',b:'#FFEDD5',l:'Shopping'},
+  transfer:     {i:'💱',c:'#9CA3AF',b:'#F9FAFB',l:'Transfer'},
+  income:       {i:'💰',c:'#16A34A',b:'#DCFCE7',l:'Income'},
+  'income-usd': {i:'💵',c:'#15803D',b:'#D1FAE5',l:'Income USD'},
+  'carry-over': {i:'↩️',c:'#9CA3AF',b:'#F9FAFB',l:'Carry-over'},
+  other:        {i:'📦',c:'#9CA3AF',b:'#F9FAFB',l:'Other'},
+};
+const ct = k => CAT[k] || CAT.other;
+const fA = n => '$ ' + Math.abs(n).toLocaleString('es-AR', {maximumFractionDigits:0});
+const fU = n => 'US$ ' + Math.abs(n).toLocaleString('en-US', {maximumFractionDigits:0});
+const mons = rs => [...new Set(rs.map(r=>r.date?.substring(0,7)).filter(Boolean))].sort();
+const byM  = (rs,m) => rs.filter(r => r.date?.startsWith(m));
+const exps = rs => rs.filter(r => r.amount < 0 && !['income','income-usd','carry-over','transfer'].includes(r.category));
+const incs = rs => rs.filter(r => r.amount > 0 && ['income','income-usd'].includes(r.category));
+const mLbl = m => new Date(m+'-01').toLocaleDateString('en-US', {month:'long', year:'numeric'});
+
+let pieI=null, barI=null;
+
+function go(data) {
+  const recs = data.records || [];
+  const ms = mons(recs);
+  let sel = ms[ms.length-1] || '';
+  const cb = data.current_balance || {};
+  const sb = data.starting_balance || {};
+
+  document.getElementById('app').innerHTML = `
+    <div class="hdr">
+      <div>
+        <div class="hdr-title">Good day, Mar! 👋</div>
+        <div class="hdr-sub">Your personal finance overview</div>
+      </div>
+      <select class="m-sel" id="mSel">
+        ${ms.map(m=>`<option value="${m}"${m===sel?' selected':''}>${mLbl(m)}</option>`).join('')}
+      </select>
+    </div>
+    <div class="g">
+      <div class="r4" id="stats"></div>
+      <div class="r3">
+        <div class="hero">
+          <div class="h-lbl">Balance ARS</div>
+          <div class="h-val">${fA(cb.ARS||0)}</div>
+          <div class="h-sub">Started at ${fA(sb.ARS||0)}</div>
+          <div class="h-pill">💳 To pay: ${fA(cb.to_pay||0)}</div>
+        </div>
+        <div class="c usd-card">
+          <div class="s-top"><div class="s-ico ico-pur">🇺🇸</div></div>
+          <div class="s-lbl" style="margin-bottom:6px">USD Balance</div>
+          <div class="usd-val">${fU(cb.USD||0)}</div>
+          <div class="s-lbl" style="margin-top:8px">Started: ${fU(sb.USD||0)}</div>
+        </div>
+        <div class="c">
+          <div class="ct">Spending by Category</div>
+          <div class="cs" id="pieSub"></div>
+          <div class="cb"><canvas id="pieC"></canvas></div>
+        </div>
+      </div>
+      <div class="r2">
+        <div class="c">
+          <div class="ct">Monthly Overview</div>
+          <div class="cs">Income vs Expenses</div>
+          <div class="cb t"><canvas id="barC"></canvas></div>
+        </div>
+        <div class="c">
+          <div class="ct">Recent Transactions</div>
+          <div class="cs" id="recSub"></div>
+          <div class="rl" id="recList"></div>
+        </div>
+      </div>
+    </div>`;
+
+  // Bar chart — all months, built once
+  const md = ms.map(m => ({
+    l: new Date(m+'-01').toLocaleDateString('en-US',{month:'short',year:'2-digit'}),
+    e: exps(byM(recs,m)).reduce((s,r)=>s+Math.abs(r.amount),0),
+    i: incs(byM(recs,m)).reduce((s,r)=>s+r.amount,0)
+  }));
+
+  Chart.defaults.font.family = 'Plus Jakarta Sans';
+  if(barI) barI.destroy();
+  barI = new Chart(document.getElementById('barC'), {
+    type: 'bar',
+    data: {
+      labels: md.map(d=>d.l),
+      datasets: [
+        {label:'Income',  data:md.map(d=>d.i), backgroundColor:'#16A34A22', borderColor:'#16A34A', borderWidth:2, borderRadius:6, borderSkipped:false},
+        {label:'Expenses',data:md.map(d=>d.e), backgroundColor:'#6C63FF22', borderColor:'#6C63FF', borderWidth:2, borderRadius:6, borderSkipped:false}
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{labels:{font:{size:11,weight:'600'},usePointStyle:true,padding:16}},
+        tooltip:{callbacks:{label:c=>` ${fA(c.raw)}`}}
+      },
+      scales:{
+        y:{ticks:{callback:v=>'$'+Math.round(v/1000)+'k',font:{size:10}},grid:{color:'#F3F4F8'},border:{display:false}},
+        x:{ticks:{font:{size:11}},grid:{display:false},border:{display:false}}
+      }
+    }
+  });
+
+  function update(month) {
+    const mr = byM(recs, month);
+    const ex = exps(mr), ic = incs(mr);
+    const tE = ex.reduce((s,r)=>s+Math.abs(r.amount),0);
+    const tI = ic.reduce((s,r)=>s+r.amount,0);
+    const net = tI - tE;
+
+    document.getElementById('pieSub').textContent = mLbl(month);
+    document.getElementById('recSub').textContent = mLbl(month);
+
+    // Stats row
+    document.getElementById('stats').innerHTML = `
+      <div class="c">
+        <div class="s-top"><div class="s-ico ico-grn">💰</div><div class="s-dots">· · ·</div></div>
+        <div class="s-val">${fA(tI)}</div>
+        <div class="s-lbl">Total Income</div>
+        <span class="bdg bg">↑ ${ic.length} transactions</span>
+      </div>
+      <div class="c">
+        <div class="s-top"><div class="s-ico ico-red">🛒</div><div class="s-dots">· · ·</div></div>
+        <div class="s-val">${fA(tE)}</div>
+        <div class="s-lbl">Total Expenses</div>
+        <span class="bdg br">↓ ${ex.length} transactions</span>
+      </div>
+      <div class="c">
+        <div class="s-top"><div class="s-ico ${net>=0?'ico-grn':'ico-red'}">🐖</div><div class="s-dots">· · ·</div></div>
+        <div class="s-val">${net>=0?'+':''}${fA(net)}</div>
+        <div class="s-lbl">Net Balance</div>
+        <span class="bdg ${net>=0?'bg':'br'}">${net>=0?'Great month!':'Overspent'}</span>
+      </div>
+      <div class="c">
+        <div class="s-top"><div class="s-ico ico-pur">📊</div><div class="s-dots">· · ·</div></div>
+        <div class="s-val">${ex.length+ic.length}</div>
+        <div class="s-lbl">Transactions</div>
+        <span class="bdg bp">${mLbl(month).split(' ')[0]}</span>
+      </div>`;
+
+    // Pie
+    const catT = {};
+    ex.forEach(r=>{ const k=r.category||'other'; catT[k]=(catT[k]||0)+Math.abs(r.amount); });
+    if(pieI) pieI.destroy();
+    pieI = new Chart(document.getElementById('pieC'), {
+      type: 'doughnut',
+      data: {
+        labels: Object.keys(catT).map(k=>ct(k).l),
+        datasets:[{
+          data: Object.values(catT),
+          backgroundColor: Object.keys(catT).map(k=>ct(k).c+'BB'),
+          borderColor: Object.keys(catT).map(k=>ct(k).c),
+          borderWidth: 2,
+          hoverOffset: 5
+        }]
+      },
+      options: {
+        responsive:true, maintainAspectRatio:false, cutout:'62%',
+        plugins:{
+          legend:{position:'right',labels:{font:{size:10,weight:'600'},boxWidth:9,padding:8,usePointStyle:true}},
+          tooltip:{callbacks:{label:c=>` ${fA(c.raw)}`}}
+        }
+      }
+    });
+
+    // Records
+    document.getElementById('recList').innerHTML = [...mr].reverse().slice(0,20).map(r=>`
+      <div class="rr">
+        <div class="rl-l">
+          <div class="ri" style="background:${ct(r.category).b}">${ct(r.category).i}</div>
+          <div>
+            <div class="rn">${r.description||'—'}</div>
+            <div class="rc">${ct(r.category).l}</div>
+          </div>
+        </div>
+        <div class="ra ${r.amount>=0?'pos':'neg'}">${r.amount>=0?'+':''}${fA(r.amount)}</div>
+      </div>`).join('');
+  }
+
+  update(sel);
+  document.getElementById('mSel').addEventListener('change', e => update(e.target.value));
+}
+
+fetch(SRC).then(r=>r.json()).then(go).catch(e=>{
+  document.getElementById('app').innerHTML=`<div class="loader"><div style="font-size:2rem">😬</div><div style="font-weight:700;font-size:.95rem">Couldn't load data</div><div style="font-size:.78rem;color:var(--muted)">${e.message}</div></div>`;
+});
+</script>
+</body>
+</html>
