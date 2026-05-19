@@ -13,3 +13,4 @@
 - When adding expense records, always read expenses/expenses.json first, then append the new record
 - Keep the JSON structure valid at all times
 - Never create new folders or files unless explicitly asked
+- When displaying movements (e.g. in a table), always show the description as-is — if the description is an emoji, display the emoji directly, not a text label
