@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🐖 Finanzas</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #FFF8F0;
+    --card: #FFFFFF;
+    --orange: #FF6B35;
+    --yellow: #FFD93D;
+    --green: #6BCB77;
+    --blue: #4D96FF;
+    --pink: #FF6B9D;
+    --purple: #C77DFF;
+    --dark: #2D2D2D;
+    --muted: #888;
+    --shadow: 0 4px 20px rgba(0,0,0,0.08);
+    --radius: 20px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    font-family: 'Nunito', sans-serif;
+    color: var(--dark);
+    min-height: 100vh;
+    padding: 24px 20px 60px;
+    background-image: radial-gradient(circle at 20% 20%, #FFE8D6 0%, transparent 50%),
+                      radial-gradient(circle at 80% 80%, #D6F0FF 0%, transparent 50%);
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  header h1 {
+    font-family: 'Fredoka One', cursive;
+    font-size: 2.8rem;
+    color: var(--orange);
+    letter-spacing: 1px;
+  }
+
+  header p {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-top: 4px;
+  }
+
+  .grid {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    gap: 20px;
+  }
+
+  /* SUMMARY CARDS */
+  .summary-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+  }
+
+  .stat-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s;
+  }
+
+  .stat-card:hover { transform: translateY(-3px); }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+  }
+
+  .stat-card.income::before { background: var(--green); }
+  .stat-card.expenses::before { background: var(--orange); }
+  .stat-card.balance::before { background: var(--blue); }
+  .stat-card.usd::before { background: var(--yellow); }
+  .stat-card.pig::before { background: var(--pink); }
+
+  .stat-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .stat-value {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.8rem;
+    line-height: 1;
+  }
+
+  .stat-card.income .stat-value { color: var(--green); }
+  .stat-card.expenses .stat-value { color: var(--orange); }
+  .stat-card.balance .stat-value { color: var(--blue); }
+  .stat-card.usd .stat-value { color: #E6B800; }
+  .stat-card.pig .stat-value { color: var(--pink); }
+
+  .stat-sub {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .stat-emoji {
+    position: absolute;
+    right: 16px;
+    top: 16px;
+    font-size: 1.8rem;
+    opacity: 0.15;
+  }
+
+  /* CHARTS */
+  .charts-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  @media (max-width: 700px) {
+    .charts-row { grid-template-columns: 1fr; }
+    header h1 { font-size: 2rem; }
+    .stat-value { font-size: 1.4rem; }
+  }
+
+  .chart-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: var(--shadow);
+  }
+
+  .chart-card.full { grid-column: 1 / -1; }
+
+  .chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .chart-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.2rem;
+    color: var(--dark);
+  }
+
+  select {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    padding: 6px 12px;
+    border: 2px solid #eee;
+    border-radius: 30px;
+    background: white;
+    color: var(--dark);
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  select:focus { border-color: var(--orange); }
+
+  .chart-container {
+    position: relative;
+    height: 260px;
+  }
+
+  /* RECORDS TABLE */
+  .records-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: var(--shadow);
+  }
+
+  .records-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .records-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 320px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+
+  .records-list::-webkit-scrollbar { width: 4px; }
+  .records-list::-webkit-scrollbar-thumb { background: #eee; border-radius: 4px; }
+
+  .record-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: #FAFAFA;
+    transition: background 0.15s;
+  }
+
+  .record-item:hover { background: #F0F0F0; }
+
+  .record-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .record-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .record-desc {
+    font-size: 0.88rem;
+    font-weight: 600;
+  }
+
+  .record-cat {
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  .record-amount {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1rem;
+  }
+
+  .positive { color: var(--green); }
+  .negative { color: var(--orange); }
+
+  /* LOADING */
+  .loading {
+    text-align: center;
+    padding: 60px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.5rem;
+    color: var(--orange);
+  }
+
+  .error {
+    text-align: center;
+    padding: 40px;
+    color: var(--orange);
+    font-weight: 700;
+  }
+
+  /* BALANCE CARD */
+  .balance-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  @media (max-width: 500px) {
+    .balance-row { grid-template-columns: 1fr; }
+  }
+
+  .balance-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: var(--radius);
+    padding: 24px;
+    color: white;
+    box-shadow: var(--shadow);
+  }
+
+  .balance-card.ars {
+    background: linear-gradient(135deg, var(--orange) 0%, #FF9A5C 100%);
+  }
+
+  .balance-card.usd-card {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  }
+
+  .balance-card-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.8;
+    margin-bottom: 8px;
+  }
+
+  .balance-card-value {
+    font-family: 'Fredoka One', cursive;
+    font-size: 2rem;
+  }
+
+  .balance-card-sub {
+    font-size: 0.8rem;
+    opacity: 0.7;
+    margin-top: 6px;
+  }
+
+  .to-pay-badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    margin-top: 8px;
+  }
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="loading">🐖 Loading your finances...</div>
+</div>
+
+<script>
+const DATA_URL = 'https://raw.githubusercontent.com/maguirre26/the_repo/main/expenses/expenses.json';
+
+const CATEGORY_COLORS = {
+  'daily':       '#FF6B35',
+  'services':    '#4D96FF',
+  'monthly':     '#C77DFF',
+  'indulgencias':'#FF6B9D',
+  'home':        '#6BCB77',
+  'shopping':    '#FFD93D',
+  'transfer':    '#A8DADC',
+  'income':      '#6BCB77',
+  'income-usd':  '#38ef7d',
+  'carry-over':  '#B0B0B0',
+  'other':       '#E0E0E0'
+};
+
+const CATEGORY_LABELS = {
+  'daily':       '🛒 Daily',
+  'services':    '⚡ Services',
+  'monthly':     '📅 Monthly',
+  'indulgencias':'✨ Treats',
+  'home':        '🏠 Home',
+  'shopping':    '🛍️ Shopping',
+  'transfer':    '💱 Transfer',
+  'income':      '💰 Income',
+  'income-usd':  '💵 Income USD',
+  'carry-over':  '↩️ Carry-over',
+  'other':       '📦 Other'
+};
+
+function formatARS(n) {
+  return '$ ' + Math.abs(n).toLocaleString('es-AR', { maximumFractionDigits: 0 });
+}
+
+function formatUSD(n) {
+  return 'US$ ' + Math.abs(n).toLocaleString('en-US', { maximumFractionDigits: 0 });
+}
+
+function getMonths(records) {
+  const months = [...new Set(records.map(r => r.date ? r.date.substring(0, 7) : null).filter(Boolean))];
+  return months.sort();
+}
+
+function filterByMonth(records, month) {
+  return records.filter(r => r.date && r.date.startsWith(month));
+}
+
+function getExpenses(records) {
+  return records.filter(r => r.amount < 0 && !['income','income-usd','carry-over','transfer'].includes(r.category));
+}
+
+function getIncome(records) {
+  return records.filter(r => r.amount > 0 && ['income','income-usd'].includes(r.category));
+}
+
+function buildApp(data) {
+  const records = data.records || [];
+  const months = getMonths(records);
+  const currentBalance = data.current_balance || {};
+  const startingBalance = data.starting_balance || {};
+
+  // Default to latest month
+  let selectedMonth = months[months.length - 1] || '2026-05';
+
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <header>
+      <h1>🐖 Mis Finanzas</h1>
+      <p>Your personal finance dashboard</p>
+    </header>
+
+    <div class="grid">
+
+      <!-- BALANCE CARDS -->
+      <div class="balance-row">
+        <div class="balance-card ars">
+          <div class="balance-card-label">💵 Current Balance ARS</div>
+          <div class="balance-card-value" id="balARS">${formatARS(currentBalance.ARS || 0)}</div>
+          <div class="balance-card-sub">Started: ${formatARS(startingBalance.ARS || 0)}</div>
+          <div class="to-pay-badge">To pay: ${formatARS(currentBalance.to_pay || 0)}</div>
+        </div>
+        <div class="balance-card usd-card">
+          <div class="balance-card-label">🇺🇸 Current Balance USD</div>
+          <div class="balance-card-value" id="balUSD">${formatUSD(currentBalance.USD || 0)}</div>
+          <div class="balance-card-sub">Started: ${formatUSD(startingBalance.USD || 0)}</div>
+        </div>
+      </div>
+
+      <!-- SUMMARY STATS -->
+      <div class="summary-row" id="summaryRow"></div>
+
+      <!-- CHARTS ROW -->
+      <div class="charts-row">
+        <div class="chart-card">
+          <div class="chart-header">
+            <div class="chart-title">🥧 Spending by Category</div>
+            <select id="monthSelect"></select>
+          </div>
+          <div class="chart-container">
+            <canvas id="pieChart"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-header">
+            <div class="chart-title">📈 Monthly Totals</div>
+          </div>
+          <div class="chart-container">
+            <canvas id="lineChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- RECORDS -->
+      <div class="records-card">
+        <div class="records-header">
+          <div class="chart-title">📋 Recent Records</div>
+        </div>
+        <div class="records-list" id="recordsList"></div>
+      </div>
+
+    </div>
+  `;
+
+  // Populate month selector
+  const monthSelect = document.getElementById('monthSelect');
+  months.forEach(m => {
+    const opt = document.createElement('option');
+    opt.value = m;
+    opt.textContent = new Date(m + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    if (m === selectedMonth) opt.selected = true;
+    monthSelect.appendChild(opt);
+  });
+
+  let pieChartInstance = null;
+  let lineChartInstance = null;
+
+  function updateSummary(month) {
+    const monthRecords = filterByMonth(records, month);
+    const expenses = getExpenses(monthRecords);
+    const income = getIncome(monthRecords);
+
+    const totalExpenses = expenses.reduce((s, r) => s + Math.abs(r.amount), 0);
+    const totalIncome = income.reduce((s, r) => s + r.amount, 0);
+    const net = totalIncome - totalExpenses;
+
+    document.getElementById('summaryRow').innerHTML = `
+      <div class="stat-card income">
+        <div class="stat-emoji">💰</div>
+        <div class="stat-label">Income</div>
+        <div class="stat-value">${formatARS(totalIncome)}</div>
+        <div class="stat-sub">${income.length} transactions</div>
+      </div>
+      <div class="stat-card expenses">
+        <div class="stat-emoji">🛒</div>
+        <div class="stat-label">Expenses</div>
+        <div class="stat-value">${formatARS(totalExpenses)}</div>
+        <div class="stat-sub">${expenses.length} transactions</div>
+      </div>
+      <div class="stat-card balance">
+        <div class="stat-emoji">${net >= 0 ? '😊' : '😬'}</div>
+        <div class="stat-label">Net</div>
+        <div class="stat-value" style="color:${net >= 0 ? 'var(--green)' : 'var(--orange)'}">${net >= 0 ? '+' : ''}${formatARS(net)}</div>
+        <div class="stat-sub">${net >= 0 ? 'Positive month!' : 'Overspent'}</div>
+      </div>
+    `;
+  }
+
+  function updatePieChart(month) {
+    const monthRecords = filterByMonth(records, month);
+    const expenses = getExpenses(monthRecords);
+
+    const catTotals = {};
+    expenses.forEach(r => {
+      const cat = r.category || 'other';
+      catTotals[cat] = (catTotals[cat] || 0) + Math.abs(r.amount);
+    });
+
+    const labels = Object.keys(catTotals).map(c => CATEGORY_LABELS[c] || c);
+    const values = Object.values(catTotals);
+    const colors = Object.keys(catTotals).map(c => CATEGORY_COLORS[c] || '#ccc');
+
+    if (pieChartInstance) pieChartInstance.destroy();
+    const ctx = document.getElementById('pieChart').getContext('2d');
+    pieChartInstance = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels,
+        datasets: [{
+          data: values,
+          backgroundColor: colors,
+          borderWidth: 3,
+          borderColor: '#fff',
+          hoverOffset: 8
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'right',
+            labels: {
+              font: { family: 'Nunito', size: 11, weight: '700' },
+              boxWidth: 12,
+              padding: 10
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => ` ${formatARS(ctx.raw)}`
+            }
+          }
+        }
+      }
+    });
+  }
+
+  function updateLineChart() {
+    const monthlyData = months.map(month => {
+      const monthRecords = filterByMonth(records, month);
+      const expenses = getExpenses(monthRecords);
+      const income = getIncome(monthRecords);
+      return {
+        month,
+        expenses: expenses.reduce((s, r) => s + Math.abs(r.amount), 0),
+        income: income.reduce((s, r) => s + r.amount, 0)
+      };
+    });
+
+    const labels = monthlyData.map(d => new Date(d.month + '-01').toLocaleDateString('en-US', { month: 'short', year: '2-digit' }));
+
+    if (lineChartInstance) lineChartInstance.destroy();
+    const ctx = document.getElementById('lineChart').getContext('2d');
+    lineChartInstance = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: '💰 Income',
+            data: monthlyData.map(d => d.income),
+            backgroundColor: '#6BCB7780',
+            borderColor: '#6BCB77',
+            borderWidth: 2,
+            borderRadius: 8
+          },
+          {
+            label: '🛒 Expenses',
+            data: monthlyData.map(d => d.expenses),
+            backgroundColor: '#FF6B3580',
+            borderColor: '#FF6B35',
+            borderWidth: 2,
+            borderRadius: 8
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            labels: {
+              font: { family: 'Nunito', size: 11, weight: '700' }
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => ` ${formatARS(ctx.raw)}`
+            }
+          }
+        },
+        scales: {
+          y: {
+            ticks: {
+              callback: v => '$ ' + (v/1000).toFixed(0) + 'k',
+              font: { family: 'Nunito', size: 10 }
+            },
+            grid: { color: '#f0f0f0' }
+          },
+          x: {
+            ticks: { font: { family: 'Nunito', size: 11 } },
+            grid: { display: false }
+          }
+        }
+      }
+    });
+  }
+
+  function updateRecords(month) {
+    const monthRecords = filterByMonth(records, month).slice().reverse();
+    const list = document.getElementById('recordsList');
+    list.innerHTML = monthRecords.map(r => `
+      <div class="record-item">
+        <div class="record-left">
+          <div class="record-dot" style="background:${CATEGORY_COLORS[r.category] || '#ccc'}"></div>
+          <div>
+            <div class="record-desc">${r.description || '—'}</div>
+            <div class="record-cat">${CATEGORY_LABELS[r.category] || r.category || 'other'}</div>
+          </div>
+        </div>
+        <div class="record-amount ${r.amount >= 0 ? 'positive' : 'negative'}">
+          ${r.amount >= 0 ? '+' : ''}${formatARS(r.amount)}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function refresh(month) {
+    updateSummary(month);
+    updatePieChart(month);
+    updateRecords(month);
+  }
+
+  // Init
+  updateLineChart();
+  refresh(selectedMonth);
+
+  monthSelect.addEventListener('change', (e) => {
+    selectedMonth = e.target.value;
+    refresh(selectedMonth);
+  });
+}
+
+// Fetch data
+fetch(DATA_URL)
+  .then(r => r.json())
+  .then(buildApp)
+  .catch(err => {
+    document.getElementById('app').innerHTML = `
+      <div class="error">
+        <p style="font-size:3rem">😬</p>
+        <p>Couldn't load data from GitHub.</p>
+        <p style="font-size:0.85rem;margin-top:8px;color:#aaa">${err.message}</p>
+      </div>`;
+  });
+</script>
+</body>
+</html>
