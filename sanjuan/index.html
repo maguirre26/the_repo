@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tu ruta a medida - San Juan, Argentina</title>
+</head>
+<body style="margin:0; background:#F6F0E4;">
+<div id="sj-root">
+  <style>
+    #sj-root {
+      --sand: #E7DCC6;
+      --sand-deep: #D8C9A8;
+      --ink: #241A14;
+      --ink-soft: #4A3B30;
+      --wine: #7A2836;
+      --wine-deep: #5A1B26;
+      --ochre: #B8703A;
+      --ochre-deep: #8F5327;
+      --night: #1E2A44;
+      --paper: #F6F0E4;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: transparent;
+      padding: 0;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+    #sj-root *, #sj-root *::before, #sj-root *::after { box-sizing: border-box; }
+
+    #sj-root .sj-header {
+      text-align: center;
+      padding: 28px 16px 20px;
+    }
+    #sj-root .sj-eyebrow {
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--ochre-deep);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    #sj-root .sj-title {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 30px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      margin: 0 0 6px;
+    }
+    #sj-root .sj-sub {
+      font-size: 14px;
+      color: var(--ink-soft);
+      max-width: 480px;
+      margin: 0 auto;
+      line-height: 1.5;
+    }
+
+    #sj-root .sj-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      padding: 8px 20px 32px;
+    }
+    @media (max-width: 720px) {
+      #sj-root .sj-grid { grid-template-columns: 1fr; }
+    }
+
+    #sj-root .sj-panel {
+      background: var(--paper);
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid rgba(36,26,20,0.08);
+    }
+    #sj-root .sj-panel-head {
+      padding: 16px 18px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    #sj-root .sj-panel[data-kind="turismo"] .sj-panel-head { background: linear-gradient(135deg, var(--ochre) 0%, var(--ochre-deep) 100%); }
+    #sj-root .sj-panel[data-kind="bodegas"] .sj-panel-head { background: linear-gradient(135deg, var(--wine) 0%, var(--wine-deep) 100%); }
+
+    #sj-root .sj-panel-title {
+      font-family: Georgia, serif;
+      font-size: 18px;
+      color: #fff;
+      font-weight: 700;
+      margin: 0;
+    }
+    #sj-root .sj-panel-caption {
+      font-size: 11px;
+      color: rgba(255,255,255,0.8);
+      margin-top: 2px;
+    }
+    #sj-root .sj-reset-btn {
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.4);
+      color: #fff;
+      font-size: 11px;
+      padding: 6px 10px;
+      border-radius: 20px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s ease;
+    }
+    #sj-root .sj-reset-btn:hover { background: rgba(255,255,255,0.3); }
+
+    #sj-root .sj-list {
+      list-style: none;
+      margin: 0;
+      padding: 10px;
+      min-height: 40px;
+    }
+
+    #sj-root .sj-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      background: #fff;
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      border: 1px solid rgba(36,26,20,0.07);
+      cursor: grab;
+      user-select: none;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+    }
+    #sj-root .sj-item:active { cursor: grabbing; }
+    #sj-root .sj-item.dragging {
+      opacity: 0.4;
+    }
+    #sj-root .sj-item.drag-over {
+      box-shadow: 0 0 0 2px var(--ochre-deep);
+    }
+    #sj-root .sj-panel[data-kind="bodegas"] .sj-item.drag-over {
+      box-shadow: 0 0 0 2px var(--wine-deep);
+    }
+
+    #sj-root .sj-rank {
+      flex: 0 0 auto;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+      margin-top: 1px;
+    }
+    #sj-root .sj-panel[data-kind="turismo"] .sj-rank { background: var(--ochre); }
+    #sj-root .sj-panel[data-kind="bodegas"] .sj-rank { background: var(--wine); }
+
+    #sj-root .sj-handle {
+      flex: 0 0 auto;
+      width: 14px;
+      height: 20px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: 2px;
+      opacity: 0.35;
+      margin-top: 4px;
+    }
+    #sj-root .sj-handle span {
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: var(--ink);
+    }
+
+    #sj-root .sj-info { flex: 1 1 auto; min-width: 0; }
+    #sj-root .sj-name {
+      font-size: 13.5px;
+      font-weight: 700;
+      line-height: 1.25;
+      margin: 0 0 2px;
+    }
+    #sj-root .sj-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11.5px;
+      color: var(--ink-soft);
+      flex-wrap: wrap;
+    }
+    #sj-root .sj-stars { color: var(--ochre-deep); letter-spacing: 1px; }
+    #sj-root .sj-panel[data-kind="bodegas"] .sj-stars { color: var(--wine-deep); }
+    #sj-root .sj-dist {
+      flex: 0 0 auto;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--ink);
+      background: var(--sand);
+      padding: 3px 8px;
+      border-radius: 20px;
+      white-space: nowrap;
+      margin-top: 1px;
+    }
+
+    #sj-root .sj-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 7px;
+    }
+    #sj-root .sj-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10.5px;
+      font-weight: 600;
+      padding: 3px 4px 3px 9px;
+      border-radius: 20px;
+      color: #fff;
+      line-height: 1.5;
+    }
+    #sj-root .sj-tag-remove {
+      background: rgba(255,255,255,0.28);
+      border: none;
+      color: #fff;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      font-size: 10px;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+    #sj-root .sj-tag-remove:hover { background: rgba(255,255,255,0.45); }
+
+    #sj-root .sj-add-tag-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10.5px;
+      font-weight: 600;
+      color: var(--ink-soft);
+      background: var(--sand);
+      border: 1px dashed rgba(36,26,20,0.25);
+      padding: 3px 9px;
+      border-radius: 20px;
+      cursor: pointer;
+    }
+    #sj-root .sj-add-tag-btn:hover { background: var(--sand-deep); }
+
+    #sj-root .sj-tag-form {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      margin-top: 7px;
+      flex-wrap: wrap;
+    }
+    #sj-root .sj-tag-form.open { display: flex; }
+    #sj-root .sj-tag-input {
+      font-size: 11.5px;
+      padding: 4px 8px;
+      border-radius: 8px;
+      border: 1px solid rgba(36,26,20,0.2);
+      outline: none;
+      width: 120px;
+      font-family: inherit;
+    }
+    #sj-root .sj-tag-input:focus { border-color: var(--ochre-deep); }
+    #sj-root .sj-panel[data-kind="bodegas"] .sj-tag-input:focus { border-color: var(--wine-deep); }
+
+    #sj-root .sj-swatch {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid transparent;
+      flex: 0 0 auto;
+    }
+    #sj-root .sj-swatch.selected { border-color: var(--ink); }
+
+    #sj-root .sj-tag-confirm {
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+      background: var(--ink);
+      border: none;
+      padding: 4px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    #sj-root .sj-tag-cancel {
+      font-size: 11px;
+      color: var(--ink-soft);
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    #sj-root .sj-note {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      margin-top: 7px;
+      font-size: 11.5px;
+      font-style: italic;
+      color: var(--ink-soft);
+      background: var(--sand);
+      padding: 5px 9px;
+      border-radius: 8px;
+      line-height: 1.4;
+    }
+    #sj-root .sj-note-edit {
+      flex: 0 0 auto;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 11px;
+      font-style: normal;
+      opacity: 0.6;
+    }
+    #sj-root .sj-note-edit:hover { opacity: 1; }
+    #sj-root .sj-add-note-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10.5px;
+      font-weight: 600;
+      color: var(--ink-soft);
+      background: none;
+      border: 1px dashed rgba(36,26,20,0.25);
+      padding: 3px 9px;
+      border-radius: 20px;
+      cursor: pointer;
+      margin-top: 7px;
+    }
+    #sj-root .sj-add-note-btn:hover { background: var(--sand); }
+    #sj-root .sj-note-form {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      margin-top: 7px;
+      flex-wrap: wrap;
+    }
+    #sj-root .sj-note-form.open { display: flex; }
+    #sj-root .sj-note-input {
+      font-size: 11.5px;
+      padding: 4px 8px;
+      border-radius: 8px;
+      border: 1px solid rgba(36,26,20,0.2);
+      outline: none;
+      flex: 1 1 140px;
+      font-family: inherit;
+      font-style: italic;
+    }
+    #sj-root .sj-note-input:focus { border-color: var(--ochre-deep); }
+    #sj-root .sj-panel[data-kind="bodegas"] .sj-note-input:focus { border-color: var(--wine-deep); }
+
+    #sj-root .sj-add-place-wrap {
+      padding: 0 10px 12px;
+    }
+    #sj-root .sj-add-place-btn {
+      width: 100%;
+      text-align: center;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--ink-soft);
+      background: #fff;
+      border: 1.5px dashed rgba(36,26,20,0.28);
+      padding: 11px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    #sj-root .sj-add-place-btn:hover { background: var(--sand); }
+    #sj-root .sj-add-place-form {
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+      background: #fff;
+      border: 1px solid rgba(36,26,20,0.1);
+      border-radius: 10px;
+      padding: 12px;
+    }
+    #sj-root .sj-add-place-form.open { display: flex; }
+    #sj-root .sj-add-place-form .sj-note-input {
+      width: 100%;
+      font-style: normal;
+    }
+    #sj-root .sj-add-place-label {
+      font-size: 10.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--ink-soft);
+      margin: 2px 0 -3px;
+    }
+    #sj-root .sj-add-place-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 2px;
+    }
+    #sj-root .sj-custom-badge {
+      font-style: italic;
+    }
+
+    #sj-root .sj-side {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+      flex: 0 0 auto;
+    }
+    #sj-root .sj-delete-place {
+      font-size: 10.5px;
+      color: var(--ink-soft);
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 0;
+    }
+
+    #sj-root .sj-sync {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--ink-soft);
+      background: #fff;
+      border: 1px solid rgba(36,26,20,0.12);
+      padding: 5px 12px;
+      border-radius: 20px;
+      margin-top: 10px;
+    }
+    #sj-root .sj-sync-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #9aa;
+      flex: 0 0 auto;
+      transition: background 0.2s ease;
+    }
+    #sj-root .sj-sync[data-state="ok"] .sj-sync-dot { background: #3E6B4F; }
+    #sj-root .sj-sync[data-state="saving"] .sj-sync-dot,
+    #sj-root .sj-sync[data-state="loading"] .sj-sync-dot { background: var(--ochre); }
+    #sj-root .sj-sync[data-state="error"] .sj-sync-dot { background: var(--wine); }
+    #sj-root .sj-sync-refresh {
+      border: none;
+      background: none;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--ink-soft);
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 0;
+      margin-left: 4px;
+    }
+
+    #sj-root .sj-footer {
+      text-align: center;
+      font-size: 11px;
+      color: var(--ink-soft);
+      padding: 0 20px 24px;
+    }
+  </style>
+
+  <div class="sj-header">
+    <div class="sj-eyebrow">San Juan · Cuyo, Argentina</div>
+    <h1 class="sj-title">Tu ruta a medida</h1>
+    <p class="sj-sub">Arrastrá cada tarjeta para reordenar, y sumale tus propias etiquetas (imprescindible, con niños, atardecer, etc). Los cambios se comparten con quien tenga este link.</p>
+    <div class="sj-sync" id="sj-sync-badge" data-state="loading">
+      <span class="sj-sync-dot"></span>
+      <span class="sj-sync-text">Conectando…</span>
+      <button class="sj-sync-refresh" id="sj-sync-refresh-btn" type="button">Actualizar ahora</button>
+    </div>
+  </div>
+
+  <div class="sj-grid">
+    <div class="sj-panel" data-kind="turismo">
+      <div class="sj-panel-head">
+        <div>
+          <p class="sj-panel-title">🏔️ Lugares turísticos</p>
+          <p class="sj-panel-caption">Ordenados por cercanía a la ciudad</p>
+        </div>
+        <button class="sj-reset-btn" data-reset="turismo">Reordenar por defecto</button>
+      </div>
+      <ul class="sj-list" id="sj-list-turismo"></ul>
+      <div class="sj-add-place-wrap" id="sj-add-turismo"></div>
+    </div>
+
+    <div class="sj-panel" data-kind="bodegas">
+      <div class="sj-panel-head">
+        <div>
+          <p class="sj-panel-title">🍷 Bodegas</p>
+          <p class="sj-panel-caption">Ordenadas por cercanía a la ciudad</p>
+        </div>
+        <button class="sj-reset-btn" data-reset="bodegas">Reordenar por defecto</button>
+      </div>
+      <ul class="sj-list" id="sj-list-bodegas"></ul>
+      <div class="sj-add-place-wrap" id="sj-add-bodegas"></div>
+    </div>
+  </div>
+
+  <div class="sj-footer">Tip: en mobile, mantené presionada la tarjeta un instante y luego arrastrá. Los cambios se guardan automáticamente y son visibles para cualquiera que abra este mismo link.</div>
+
+  <script>
+    (function () {
+      var root = document.getElementById('sj-root');
+
+      var TAG_COLORS = ["#B8703A", "#7A2836", "#1E2A44", "#3E6B4F", "#8F5327", "#5A1B26", "#6B4F8F"];
+
+      var DATA = {
+        turismo: [
+          { name: "Casa Natal de Sarmiento", dist: "0 km", stars: 4.5, tags: [], note: "" },
+          { name: "Catedral de San Juan Bautista", dist: "0 km", stars: 4.0, tags: [], note: "" },
+          { name: "Teatro del Bicentenario", dist: "~1 km", stars: 4.5, tags: [], note: "" },
+          { name: "Parque de Mayo", dist: "~2 km", stars: 3.9, tags: [], note: "" },
+          { name: "Museo de Ciencias Naturales", dist: "~2 km", stars: 4.2, tags: [], note: "" },
+          { name: "Quebrada de Zonda / Ruta Interlagos", dist: "~20-25 km", stars: 4.0, tags: [], note: "" },
+          { name: "Dique de Ullum", dist: "~20 km", stars: 4.0, tags: [], note: "" },
+          { name: "Santuario de la Difunta Correa", dist: "~64 km", stars: 4.3, tags: [], note: "" },
+          { name: "Cuesta del Viento / Rodeo", dist: "~150 km", stars: 4.2, tags: [], note: "" },
+          { name: "San José de Jáchal", dist: "~160 km", stars: 4.0, tags: [], note: "" },
+          { name: "Cerro Alcázar / Barreal / Calingasta", dist: "~180-200 km", stars: 4.8, tags: [], note: "" },
+          { name: "Parque Nacional El Leoncito", dist: "~245 km", stars: 4.7, tags: [], note: "Observatorios" },
+          { name: "Parque Provincial Ischigualasto (Valle de la Luna)", dist: "~330 km", stars: 4.7, tags: [], note: "" }
+        ],
+        bodegas: [
+          { name: "Bodega La Guarda", dist: "~8 km", stars: 4.0, tags: [], note: "" },
+          { name: "Museo Santiago Graffigna", dist: "~8 km", stars: 4.1, tags: [], note: "" },
+          { name: "Bodega Merced del Estero", dist: "~10 km", stars: 4.2, tags: [], note: "" },
+          { name: "Bodega Las Marianas", dist: "~12 km", stars: 4.1, tags: [], note: "" },
+          { name: "Fabril Alto Verde", dist: "~15 km", stars: 4.3, tags: [], note: "" },
+          { name: "Viñas de Segisa", dist: "~15 km", stars: 4.2, tags: [], note: "" },
+          { name: "Champañera Miguel Mas", dist: "~16 km", stars: 4.1, tags: [], note: "" },
+          { name: "Casa Vinícola El Milagro", dist: "~18 km", stars: 4.0, tags: [], note: "" },
+          { name: "Bodega Augusto Pulenta", dist: "~25 km", stars: 4.0, tags: [], note: "" },
+          { name: "Bodegas Callia", dist: "~30 km", stars: 4.5, tags: [], note: "" },
+          { name: "Pyros Wines (Salentein)", dist: "~90 km", stars: 4.6, tags: [], note: "" },
+          { name: "Cara Sur (Valle de Calingasta)", dist: "~180 km", stars: 4.7, tags: [], note: "" }
+        ]
+      };
+
+      var ORIGINAL = JSON.parse(JSON.stringify(DATA));
+      var uidCounter = 0;
+
+      function starString(v) {
+        var full = Math.round(v);
+        return "★★★★★".slice(0, full) + "☆☆☆☆☆".slice(0, 5 - full);
+      }
+
+      // ---- Sincronizacion con el backend compartido ----
+      var API_URL = '/api/data';
+      var syncBadge = root.querySelector('#sj-sync-badge');
+      var syncText = syncBadge ? syncBadge.querySelector('.sj-sync-text') : null;
+
+      function setSyncStatus(state) {
+        if (!syncBadge) return;
+        syncBadge.dataset.state = state;
+        var labels = {
+          loading: 'Conectando…',
+          ok: 'Sincronizado',
+          saving: 'Guardando…',
+          error: 'No se pudo sincronizar'
+        };
+        syncText.textContent = labels[state] || '';
+      }
+
+      function isUserEditing() {
+        return !!root.querySelector('.sj-tag-form.open, .sj-note-form.open, .sj-add-place-form.open, .dragging');
+      }
+
+      function saveKindNow(kind) {
+        setSyncStatus('saving');
+        return fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ kind: kind, items: DATA[kind] })
+        }).then(function (r) {
+          if (!r.ok) throw new Error('save failed');
+          setSyncStatus('ok');
+        }).catch(function () {
+          setSyncStatus('error');
+        });
+      }
+
+      var saveTimers = {};
+      function saveKind(kind) {
+        clearTimeout(saveTimers[kind]);
+        saveTimers[kind] = setTimeout(function () { saveKindNow(kind); }, 350);
+      }
+
+      function renderAndSave(kind) {
+        render(kind);
+        attachDnD(kind);
+        saveKind(kind);
+      }
+
+      function loadFromServer() {
+        setSyncStatus('loading');
+        return fetch(API_URL).then(function (r) { return r.json(); }).then(function (data) {
+          var hasTurismo = data.turismo && data.turismo.length;
+          var hasBodegas = data.bodegas && data.bodegas.length;
+          if (hasTurismo && hasBodegas) {
+            DATA.turismo = data.turismo;
+            DATA.bodegas = data.bodegas;
+            setSyncStatus('ok');
+          } else {
+            // primera vez: sembramos el backend con las listas por defecto
+            return Promise.all([saveKindNow('turismo'), saveKindNow('bodegas')]);
+          }
+        }).catch(function () {
+          setSyncStatus('error');
+        });
+      }
+
+      function pollServer(force) {
+        if (!force && isUserEditing()) return;
+        fetch(API_URL).then(function (r) { return r.json(); }).then(function (data) {
+          if (data.turismo && data.turismo.length) {
+            DATA.turismo = data.turismo;
+            render('turismo');
+            attachDnD('turismo');
+          }
+          if (data.bodegas && data.bodegas.length) {
+            DATA.bodegas = data.bodegas;
+            render('bodegas');
+            attachDnD('bodegas');
+          }
+          setSyncStatus('ok');
+        }).catch(function () {
+          setSyncStatus('error');
+        });
+      }
+
+      function render(kind) {
+        var listEl = root.querySelector('#sj-list-' + kind);
+        listEl.innerHTML = '';
+        DATA[kind].forEach(function (item, idx) {
+          var uid = 'sj-uid-' + (uidCounter++);
+          var li = document.createElement('li');
+          li.className = 'sj-item';
+          li.draggable = true;
+          li.dataset.kind = kind;
+          li.dataset.name = item.name;
+
+          var handle = document.createElement('div');
+          handle.className = 'sj-handle';
+          for (var i = 0; i < 6; i++) { handle.appendChild(document.createElement('span')); }
+
+          var rank = document.createElement('div');
+          rank.className = 'sj-rank';
+          rank.textContent = idx + 1;
+
+          var info = document.createElement('div');
+          info.className = 'sj-info';
+
+          var name = document.createElement('p');
+          name.className = 'sj-name';
+          name.textContent = item.name;
+
+          var meta = document.createElement('div');
+          meta.className = 'sj-meta';
+          if (typeof item.stars === 'number') {
+            var stars = document.createElement('span');
+            stars.className = 'sj-stars';
+            stars.textContent = starString(item.stars);
+            var starsNum = document.createElement('span');
+            starsNum.textContent = item.stars.toFixed(1);
+            meta.appendChild(stars);
+            meta.appendChild(starsNum);
+          }
+          if (item.custom) {
+            var customBadge = document.createElement('span');
+            customBadge.className = 'sj-custom-badge';
+            customBadge.textContent = 'agregado por vos';
+            meta.appendChild(customBadge);
+          }
+
+          info.appendChild(name);
+          if (meta.childNodes.length) info.appendChild(meta);
+
+          var tagsRow = document.createElement('div');
+          tagsRow.className = 'sj-tags';
+          item.tags.forEach(function (tag, tagIdx) {
+            var chip = document.createElement('span');
+            chip.className = 'sj-tag';
+            chip.style.background = tag.color;
+            var label = document.createElement('span');
+            label.textContent = tag.label;
+            var removeBtn = document.createElement('button');
+            removeBtn.className = 'sj-tag-remove';
+            removeBtn.type = 'button';
+            removeBtn.textContent = '\u00d7';
+            removeBtn.addEventListener('click', function (e) {
+              e.stopPropagation();
+              item.tags.splice(tagIdx, 1);
+              renderAndSave(kind);
+            });
+            chip.appendChild(label);
+            chip.appendChild(removeBtn);
+            tagsRow.appendChild(chip);
+          });
+
+          var addBtn = document.createElement('button');
+          addBtn.className = 'sj-add-tag-btn';
+          addBtn.type = 'button';
+          addBtn.textContent = '+ etiqueta';
+          tagsRow.appendChild(addBtn);
+
+          info.appendChild(tagsRow);
+
+          // note (short text note per item)
+          if (item.note) {
+            var noteEl = document.createElement('div');
+            noteEl.className = 'sj-note';
+            var noteText = document.createElement('span');
+            noteText.textContent = item.note;
+            var noteEditBtn = document.createElement('button');
+            noteEditBtn.className = 'sj-note-edit';
+            noteEditBtn.type = 'button';
+            noteEditBtn.textContent = '\u270e';
+            noteEditBtn.title = 'Editar nota';
+            noteEditBtn.addEventListener('click', function (e) {
+              e.stopPropagation();
+              noteForm.classList.add('open');
+              noteEl.style.display = 'none';
+              noteInput.focus();
+            });
+            noteEl.appendChild(noteText);
+            noteEl.appendChild(noteEditBtn);
+            info.appendChild(noteEl);
+          } else {
+            var addNoteBtn = document.createElement('button');
+            addNoteBtn.className = 'sj-add-note-btn';
+            addNoteBtn.type = 'button';
+            addNoteBtn.textContent = '+ nota';
+            addNoteBtn.addEventListener('click', function (e) {
+              e.stopPropagation();
+              noteForm.classList.add('open');
+              addNoteBtn.style.display = 'none';
+              noteInput.focus();
+            });
+            info.appendChild(addNoteBtn);
+          }
+
+          var noteForm = document.createElement('div');
+          noteForm.className = 'sj-note-form';
+          var noteInput = document.createElement('input');
+          noteInput.className = 'sj-note-input';
+          noteInput.type = 'text';
+          noteInput.maxLength = 60;
+          noteInput.placeholder = 'ej: reservar con anticipacion';
+          noteInput.value = item.note || '';
+          var noteConfirmBtn = document.createElement('button');
+          noteConfirmBtn.className = 'sj-tag-confirm';
+          noteConfirmBtn.type = 'button';
+          noteConfirmBtn.textContent = 'Guardar';
+          var noteCancelBtn = document.createElement('button');
+          noteCancelBtn.className = 'sj-tag-cancel';
+          noteCancelBtn.type = 'button';
+          noteCancelBtn.textContent = 'Cancelar';
+
+          function submitNote() {
+            item.note = noteInput.value.trim();
+            renderAndSave(kind);
+          }
+
+          noteConfirmBtn.addEventListener('click', function (e) { e.stopPropagation(); submitNote(); });
+          noteCancelBtn.addEventListener('click', function (e) { e.stopPropagation(); render(kind); attachDnD(kind); });
+          noteInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') { e.preventDefault(); submitNote(); }
+            if (e.key === 'Escape') { render(kind); attachDnD(kind); }
+          });
+          noteInput.addEventListener('click', function (e) { e.stopPropagation(); });
+          noteInput.addEventListener('mousedown', function (e) { e.stopPropagation(); });
+
+          noteForm.appendChild(noteInput);
+          noteForm.appendChild(noteConfirmBtn);
+          noteForm.appendChild(noteCancelBtn);
+          info.appendChild(noteForm);
+
+          var form = document.createElement('div');
+          form.className = 'sj-tag-form';
+          form.id = uid + '-form';
+
+          var input = document.createElement('input');
+          input.className = 'sj-tag-input';
+          input.type = 'text';
+          input.maxLength = 20;
+          input.placeholder = 'ej: con ninos';
+
+          var swatchWrap = document.createElement('div');
+          swatchWrap.style.display = 'flex';
+          swatchWrap.style.gap = '4px';
+          var selectedColor = TAG_COLORS[0];
+          TAG_COLORS.forEach(function (color, ci) {
+            var sw = document.createElement('span');
+            sw.className = 'sj-swatch' + (ci === 0 ? ' selected' : '');
+            sw.style.background = color;
+            sw.addEventListener('click', function () {
+              selectedColor = color;
+              Array.from(swatchWrap.children).forEach(function (s) { s.classList.remove('selected'); });
+              sw.classList.add('selected');
+            });
+            swatchWrap.appendChild(sw);
+          });
+
+          var confirmBtn = document.createElement('button');
+          confirmBtn.className = 'sj-tag-confirm';
+          confirmBtn.type = 'button';
+          confirmBtn.textContent = 'Agregar';
+
+          var cancelBtn = document.createElement('button');
+          cancelBtn.className = 'sj-tag-cancel';
+          cancelBtn.type = 'button';
+          cancelBtn.textContent = 'Cancelar';
+
+          function closeForm() {
+            form.classList.remove('open');
+            input.value = '';
+          }
+
+          function submitTag() {
+            var val = input.value.trim();
+            if (!val) { closeForm(); return; }
+            item.tags.push({ label: val, color: selectedColor });
+            renderAndSave(kind);
+          }
+
+          addBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            form.classList.add('open');
+            input.focus();
+          });
+
+          confirmBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            submitTag();
+          });
+          cancelBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            closeForm();
+          });
+          input.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') { e.preventDefault(); submitTag(); }
+            if (e.key === 'Escape') { closeForm(); }
+          });
+          input.addEventListener('click', function (e) { e.stopPropagation(); });
+          input.addEventListener('mousedown', function (e) { e.stopPropagation(); });
+
+          form.appendChild(input);
+          form.appendChild(swatchWrap);
+          form.appendChild(confirmBtn);
+          form.appendChild(cancelBtn);
+
+          info.appendChild(form);
+
+          var side = document.createElement('div');
+          side.className = 'sj-side';
+
+          var dist = document.createElement('div');
+          dist.className = 'sj-dist';
+          dist.textContent = item.dist;
+          side.appendChild(dist);
+
+          if (item.custom) {
+            var delBtn = document.createElement('button');
+            delBtn.className = 'sj-delete-place';
+            delBtn.type = 'button';
+            delBtn.textContent = 'eliminar';
+            delBtn.addEventListener('click', function (e) {
+              e.stopPropagation();
+              var idx = DATA[kind].indexOf(item);
+              if (idx > -1) DATA[kind].splice(idx, 1);
+              renderAndSave(kind);
+            });
+            side.appendChild(delBtn);
+          }
+
+          li.appendChild(handle);
+          li.appendChild(rank);
+          li.appendChild(info);
+          li.appendChild(side);
+
+          listEl.appendChild(li);
+        });
+      }
+
+      function attachDnD(kind) {
+        var listEl = root.querySelector('#sj-list-' + kind);
+
+        listEl.addEventListener('dragstart', function (e) {
+          var item = e.target.closest('.sj-item');
+          if (!item) return;
+          item.classList.add('dragging');
+          e.dataTransfer.effectAllowed = 'move';
+        });
+
+        listEl.addEventListener('dragend', function (e) {
+          var item = e.target.closest('.sj-item');
+          if (item) item.classList.remove('dragging');
+          Array.from(listEl.children).forEach(function (c) { c.classList.remove('drag-over'); });
+          syncOrder(kind);
+        });
+
+        listEl.addEventListener('dragover', function (e) {
+          e.preventDefault();
+          var dragging = listEl.querySelector('.dragging');
+          if (!dragging) return;
+          var afterEl = getDragAfterElement(listEl, e.clientY);
+          Array.from(listEl.children).forEach(function (c) { c.classList.remove('drag-over'); });
+          if (afterEl == null) {
+            listEl.appendChild(dragging);
+          } else {
+            afterEl.classList.add('drag-over');
+            listEl.insertBefore(dragging, afterEl);
+          }
+        });
+
+        function getDragAfterElement(container, y) {
+          var items = Array.from(container.querySelectorAll('.sj-item:not(.dragging)'));
+          return items.reduce(function (closest, child) {
+            var box = child.getBoundingClientRect();
+            var offset = y - box.top - box.height / 2;
+            if (offset < 0 && offset > closest.offset) {
+              return { offset: offset, element: child };
+            } else {
+              return closest;
+            }
+          }, { offset: -Infinity, element: null }).element;
+        }
+      }
+
+      function syncOrder(kind) {
+        var listEl = root.querySelector('#sj-list-' + kind);
+        var names = Array.from(listEl.querySelectorAll('.sj-item')).map(function (n) { return n.dataset.name; });
+        var newOrder = names.map(function (n) {
+          return DATA[kind].find(function (d) { return d.name === n; });
+        });
+        DATA[kind] = newOrder;
+        renderAndSave(kind);
+      }
+
+      function buildAddPlaceControl(kind) {
+        var wrap = root.querySelector('#sj-add-' + kind);
+        wrap.innerHTML = '';
+
+        var addBtn = document.createElement('button');
+        addBtn.className = 'sj-add-place-btn';
+        addBtn.type = 'button';
+        addBtn.textContent = '+ Agregar lugar';
+
+        var formWrap = document.createElement('div');
+        formWrap.className = 'sj-add-place-form';
+
+        var nameLabel = document.createElement('div');
+        nameLabel.className = 'sj-add-place-label';
+        nameLabel.textContent = 'Nombre';
+        var nameInput = document.createElement('input');
+        nameInput.className = 'sj-note-input';
+        nameInput.placeholder = 'ej: Mirador del Zonda';
+
+        var distLabel = document.createElement('div');
+        distLabel.className = 'sj-add-place-label';
+        distLabel.textContent = 'Distancia';
+        var distInput = document.createElement('input');
+        distInput.className = 'sj-note-input';
+        distInput.placeholder = 'ej: 50 km';
+
+        var tagLabel = document.createElement('div');
+        tagLabel.className = 'sj-add-place-label';
+        tagLabel.textContent = 'Etiqueta (opcional)';
+        var tagRow = document.createElement('div');
+        tagRow.style.display = 'flex';
+        tagRow.style.gap = '8px';
+        tagRow.style.alignItems = 'center';
+        var tagInput = document.createElement('input');
+        tagInput.className = 'sj-note-input';
+        tagInput.style.width = 'auto';
+        tagInput.style.flex = '1 1 auto';
+        tagInput.placeholder = 'ej: con niños';
+        var swatchWrap = document.createElement('div');
+        swatchWrap.style.display = 'flex';
+        swatchWrap.style.gap = '4px';
+        var selectedColor = TAG_COLORS[0];
+        TAG_COLORS.forEach(function (color, ci) {
+          var sw = document.createElement('span');
+          sw.className = 'sj-swatch' + (ci === 0 ? ' selected' : '');
+          sw.style.background = color;
+          sw.addEventListener('click', function () {
+            selectedColor = color;
+            Array.from(swatchWrap.children).forEach(function (s) { s.classList.remove('selected'); });
+            sw.classList.add('selected');
+          });
+          swatchWrap.appendChild(sw);
+        });
+        tagRow.appendChild(tagInput);
+        tagRow.appendChild(swatchWrap);
+
+        var noteLabel = document.createElement('div');
+        noteLabel.className = 'sj-add-place-label';
+        noteLabel.textContent = 'Nota (opcional)';
+        var noteInput = document.createElement('input');
+        noteInput.className = 'sj-note-input';
+        noteInput.style.fontStyle = 'italic';
+        noteInput.maxLength = 60;
+        noteInput.placeholder = 'ej: reservar con anticipación';
+
+        var actions = document.createElement('div');
+        actions.className = 'sj-add-place-actions';
+        var confirmBtn = document.createElement('button');
+        confirmBtn.className = 'sj-tag-confirm';
+        confirmBtn.type = 'button';
+        confirmBtn.textContent = 'Agregar a la lista';
+        var cancelBtn = document.createElement('button');
+        cancelBtn.className = 'sj-tag-cancel';
+        cancelBtn.type = 'button';
+        cancelBtn.textContent = 'Cancelar';
+        actions.appendChild(confirmBtn);
+        actions.appendChild(cancelBtn);
+
+        function resetForm() {
+          nameInput.value = '';
+          distInput.value = '';
+          tagInput.value = '';
+          noteInput.value = '';
+          selectedColor = TAG_COLORS[0];
+          Array.from(swatchWrap.children).forEach(function (s, i) { s.classList.toggle('selected', i === 0); });
+          formWrap.classList.remove('open');
+          addBtn.style.display = 'block';
+        }
+
+        function submitPlace() {
+          var name = nameInput.value.trim();
+          if (!name) { nameInput.focus(); return; }
+          var dist = distInput.value.trim() || '—';
+          var tagLabelVal = tagInput.value.trim();
+          DATA[kind].push({
+            name: name,
+            dist: dist,
+            stars: null,
+            tags: tagLabelVal ? [{ label: tagLabelVal, color: selectedColor }] : [],
+            note: noteInput.value.trim(),
+            custom: true
+          });
+          resetForm();
+          renderAndSave(kind);
+        }
+
+        addBtn.addEventListener('click', function () {
+          formWrap.classList.add('open');
+          addBtn.style.display = 'none';
+          nameInput.focus();
+        });
+        confirmBtn.addEventListener('click', submitPlace);
+        cancelBtn.addEventListener('click', resetForm);
+        nameInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') submitPlace(); });
+        distInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') submitPlace(); });
+        noteInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') submitPlace(); });
+
+        formWrap.appendChild(nameLabel);
+        formWrap.appendChild(nameInput);
+        formWrap.appendChild(distLabel);
+        formWrap.appendChild(distInput);
+        formWrap.appendChild(tagLabel);
+        formWrap.appendChild(tagRow);
+        formWrap.appendChild(noteLabel);
+        formWrap.appendChild(noteInput);
+        formWrap.appendChild(actions);
+
+        wrap.appendChild(addBtn);
+        wrap.appendChild(formWrap);
+      }
+
+      root.querySelectorAll('.sj-reset-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var kind = btn.dataset.reset;
+          var keepTags = {};
+          var keepNotes = {};
+          DATA[kind].forEach(function (d) { keepTags[d.name] = d.tags; keepNotes[d.name] = d.note; });
+          var originals = JSON.parse(JSON.stringify(ORIGINAL[kind])).map(function (d) {
+            d.tags = keepTags[d.name] || [];
+            d.note = keepNotes[d.name] || d.note || "";
+            return d;
+          });
+          var customs = DATA[kind].filter(function (d) { return d.custom; });
+          DATA[kind] = originals.concat(customs);
+          renderAndSave(kind);
+        });
+      });
+
+      function initApp() {
+        ['turismo', 'bodegas'].forEach(function (kind) {
+          renderAndSave(kind);
+          buildAddPlaceControl(kind);
+        });
+      }
+
+      loadFromServer().then(initApp).catch(function () {
+        initApp();
+      });
+
+      setInterval(function () { pollServer(false); }, 8000);
+
+      var refreshBtn = root.querySelector('#sj-sync-refresh-btn');
+      if (refreshBtn) {
+        refreshBtn.addEventListener('click', function () { pollServer(true); });
+      }
+    })();
+  </script>
+</div>
+
+</body>
+</html>
